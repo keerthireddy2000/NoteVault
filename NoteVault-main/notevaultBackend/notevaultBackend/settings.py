@@ -78,7 +78,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'notevaultBackend.wsgi.application'
 
 
-# Database
+Database
 
 DATABASES = {
     'default': {

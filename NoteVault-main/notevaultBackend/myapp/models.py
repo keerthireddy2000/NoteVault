@@ -12,7 +12,7 @@ class Category(models.Model):
 class Note(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)  # Note can be associated with a category
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)  # Change to CASCADE
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

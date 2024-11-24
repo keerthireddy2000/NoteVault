@@ -53,30 +53,30 @@ const Header = () => {
 
       {/* Sidebar and Overlay */}
       {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-end"
-          onClick={toggleSidebar} // Close sidebar when clicking outside
-        >
-          <nav
-            className="w-64 bg-black text-white h-full p-4 shadow-lg"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the sidebar
-          >
-            {/* <p className="text-center block w-full text-lg space-x-4">Hello {username}</p> */}
-            <Link
-              to="/profile"
-              className="text-center text-lg text-white hover:underline p-2 rounded mt-12 block w-full"
-              onClick={() => setIsSidebarOpen(false)} // Close sidebar when navigating
-            >
-              View Profile
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-lg text-white bg-transparent hover:underline mt-4 block w-full"
-            >
-              Logout
-            </button>
-          </nav>
-        </div>
+       <div
+       className="fixed inset-0 bg-black bg-opacity-70 flex justify-end"
+       onClick={toggleSidebar} 
+     >
+       <nav
+         className="w-64 bg-black text-white h-full p-4 shadow-lg"
+         onClick={(e) => e.stopPropagation()} 
+       >
+         <Link
+           to="/profile"
+           className="text-center text-lg text-white hover:bg-gray-500 p-2 rounded mt-12 block w-full hover:text-white transition duration-200 ease-in-out"
+           onClick={() => setIsSidebarOpen(false)}
+         >
+           View Profile
+         </Link>
+         <button
+           onClick={handleLogout}
+           className="text-center text-lg text-white hover:bg-gray-500 p-2 rounded mt-3 block w-full hover:text-white transition duration-200 ease-in-out"
+         >
+           Logout
+         </button>
+       </nav>
+     </div>
+     
       )}
     </div>
   );

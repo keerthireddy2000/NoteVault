@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
+import { FaThumbtack } from 'react-icons/fa';
 import { apiCallWithToken, logout } from '../api';
 
 const Editor = () => {
@@ -10,6 +11,7 @@ const Editor = () => {
   const [note, setNote] = useState('');
   const [newCategory, setNewCategory] = useState(''); // To create a new category
   const [isModalOpen, setIsModalOpen] = useState(false); // Manage modal state
+  const [isPinned, setIsPinned] = useState(false); // Pin status of the note
   const navigate = useNavigate();
 
   // Fetch categories on component mount
@@ -42,6 +44,7 @@ const Editor = () => {
             setTitle(data.title);
             setCategory(data.category); // Set the category ID from the note data
             setNote(data.content);
+            setIsPinned(data.pinned); // Set the pin status from the note data
           } else {
             console.error('Failed to fetch note');
           }
@@ -77,8 +80,6 @@ const Editor = () => {
 
   // Reset the form
   const handleReset = () => {
-    // setTitle('');
-    // setCategory('');
     setNote('');
   };
 
@@ -87,7 +88,7 @@ const Editor = () => {
     try {
       const response = await apiCallWithToken(noteId ? `http://localhost:8000/notes/update/${noteId}/` : 'http://localhost:8000/notes/create/', {
         method: noteId ? 'PUT' : 'POST',
-        body: JSON.stringify({ title, category, content: note }),
+        body: JSON.stringify({ title, category, content: note, pinned: isPinned }),
       });
 
       if (response.ok) {
@@ -120,6 +121,11 @@ const Editor = () => {
     }
   };
 
+  // Toggle pin status
+  const togglePin = () => {
+    setIsPinned(!isPinned); // Toggle the pin status
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4">
       <div className="w-full max-w-5xl bg-gray-800 p-6 rounded-lg shadow-lg">
@@ -141,7 +147,7 @@ const Editor = () => {
               Reset
             </button>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/home')}
               className="ml-4 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded"
             >
               Close
@@ -208,6 +214,15 @@ const Editor = () => {
             placeholder="Type your note here..."
             required
           />
+        </div>
+
+        {/* Pin Toggle */}
+        <div className="mb-4 flex items-center">
+          <FaThumbtack
+            className={`cursor-pointer ${isPinned ? 'text-yellow-400' : 'text-gray-400'}`}
+            onClick={togglePin} // Toggle pin status
+          />
+          <span className="ml-2 text-gray-400">{isPinned ? 'Pinned' : 'Unpinned'}</span>
         </div>
 
         {/* Action Buttons */}
