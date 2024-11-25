@@ -54,14 +54,14 @@ const Header = () => {
       {/* Sidebar and Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-end"
+          className="fixed inset-0 bg-black bg-opacity-70 z-50"
           onClick={toggleSidebar} // Close sidebar when clicking outside
         >
           <nav
-            className="w-64 bg-black text-white h-full p-4 shadow-lg"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the sidebar
-          >
-            {/* <p className="text-center block w-full text-lg space-x-4">Hello {username}</p> */}
+        className="fixed top-0 right-0 w-64 bg-black text-white h-full p-4 shadow-lg z-60"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the sidebar
+      >
+            
             <Link
               to="/profile"
               className="text-center text-lg text-white hover:underline p-2 rounded mt-12 block w-full"
@@ -78,6 +78,7 @@ const Header = () => {
           </nav>
         </div>
       )}
+      <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}></div>
     </div>
   );
 };

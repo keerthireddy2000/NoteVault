@@ -25,7 +25,8 @@ def register(request):
     data = request.data
     try:
         # Create the user
-        user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password'])
+        user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password'],first_name=data['first_name'],  # Add first name
+            last_name=data['last_name'])
         user.save()
 
         # Generate tokens for the newly created user
@@ -94,6 +95,8 @@ def profile(request):
         return Response({
             'username': user.username,
             'email': user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
         })
 
     elif request.method == 'PUT':
@@ -101,11 +104,18 @@ def profile(request):
         data = request.data
         user = request.user
         email = data.get('email')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
         if email:
             user.email = email
-            user.save()
-            return Response({'message': 'Email updated successfully'}, status=status.HTTP_200_OK)
-        return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+
+        user.save()
+        return Response({'message': 'Email updated successfully'}, status=status.HTTP_200_OK)
+    return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)   
 
 # Create Category
 @api_view(['POST'])
@@ -122,6 +132,48 @@ def create_category(request):
     # Return a 400 error if validation fails
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+@api_view(['PUT'])
+
+@permission_classes([IsAuthenticated])
+
+def edit_category(request, category_id):
+
+    try:
+
+        print("cat", category_id)
+
+        category = Category.objects.get(id=category_id)
+
+        print("cat", category)
+
+    except Category.DoesNotExist:
+
+        return Response({"detail": "Category not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+    if category.user != request.user:
+
+        return Response({"detail": "You are not authorized to edit this category."}, status=status.HTTP_403_FORBIDDEN)
+
+
+
+    serializer = CategorySerializer(category, data=request.data)
+
+
+
+    if serializer.is_valid():
+
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 # Get all categories for the logged-in user (protected)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -136,6 +188,7 @@ def create_note(request):
     title = request.data.get('title')
     content = request.data.get('content')
     category_id = request.data.get('category')  # Ensure categoryId is sent from frontend
+    pinned = request.data.get('pinned', False)
 
     # Check if all fields are provided
     if not title or not content or not category_id:
@@ -152,7 +205,8 @@ def create_note(request):
         title=title,
         content=content,
         category=category,  # Assign the category to the note
-        user=request.user
+        user=request.user,
+        pinned=bool(pinned)
     )
     
     # Serialize and return the created note
@@ -160,11 +214,28 @@ def create_note(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+# toggle_pin function to pin or unpin a note
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_pin(request, note_id):
+    try:
+        # Fetch the note by ID for the logged-in user
+        note = Note.objects.get(id=note_id, user=request.user)
+    except Note.DoesNotExist:
+        return Response({'error': 'Note not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Toggle the pinned status
+    note.pinned = not note.pinned
+    note.save()
+
+    return Response({'message': 'Pin status updated', 'pinned': note.pinned}, status=status.HTTP_200_OK)
+
+
 # Get all notes for the logged-in user
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_notes(request):
-    notes = Note.objects.filter(user=request.user)
+    notes = Note.objects.filter(user=request.user).order_by('-pinned')
     serializer = NoteSerializer(notes, many=True)
     return Response(serializer.data)
 
@@ -176,7 +247,7 @@ def get_notes_by_category(request, category_id):
         category = Category.objects.get(id=category_id, user=request.user)
         
         # Fetch all notes that belong to this category and the authenticated user
-        notes = Note.objects.filter(category=category, user=request.user)
+        notes = Note.objects.filter(category=category, user=request.user).order_by('-pinned')
         
         # Serialize the notes
         serializer = NoteSerializer(notes, many=True)
@@ -225,3 +296,33 @@ def delete_note(request, note_id):
 
     note.delete()
     return Response({'message': 'Note deleted successfully'}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+
+@permission_classes([IsAuthenticated])
+
+def delete_category(request, category_id):
+
+    try:
+
+        category = Category.objects.get(id=category_id, user=request.user)
+
+    except Category.DoesNotExist:
+
+        return Response({'message': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+    notes = Note.objects.filter(category=category) 
+
+    notes.delete()
+
+
+
+
+
+    category.delete()
+
+
+
+    return Response({'message': 'Category and associated notes deleted successfully'}, status=status.HTTP_200_OK)

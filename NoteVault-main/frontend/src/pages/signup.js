@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 const Signup = () => {
   const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const Signup = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password , first_name: firstName, last_name: lastName}),
       });
 
       const data = await response.json();
@@ -56,6 +58,28 @@ const Signup = () => {
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
       <div className="bg-black p-8 rounded-md w-full max-w-md border-2 border-white">
         <form onSubmit={handleSubmit}>
+          <div className="mb-4 flex items-center">
+              <label className="text-white text-sm font-semibold w-1/3">First Name</label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-2/3 p-2 ml-[36px] bg-white text-black rounded outline-none"
+                placeholder="Enter your first name"
+                required
+              />
+            </div>
+            <div className="mb-4 flex items-center">
+              <label className="text-white text-sm font-semibold w-1/3">Last Name</label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-2/3 p-2 ml-[36px] bg-white text-black rounded outline-none"
+                placeholder="Enter your last name"
+                required
+              />
+            </div>
           <div className="mb-4 flex items-center">
             <label className="text-white text-sm font-semibold w-1/3">Username</label>
             <input

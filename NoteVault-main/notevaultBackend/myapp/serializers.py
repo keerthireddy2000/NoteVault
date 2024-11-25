@@ -23,4 +23,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ['id', 'title', 'content', 'category', 'user']
+        fields = ['id', 'title', 'content', 'category', 'user','pinned']
+        extra_kwargs = {
+            'user':{'read_only':True},
+            'pinned':{'default':False}
+        }
