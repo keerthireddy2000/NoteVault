@@ -30,7 +30,7 @@ Backend:
 Clone the Repository
 
 ```
-git clone https://github.com/CharanKasala/notevault.git
+git clone https://github.com/keerthireddy2000/notevault.git
 cd notevault
 cd NoteVault-main
 
