@@ -556,7 +556,7 @@ const handleSaveCategory = async (categoryId) => {
               {/* Pin Icon */}
               <FaThumbtack
                 className={`absolute top-2 right-2 cursor-pointer ${
-                  note.pinned ? 'text-yellow-400' : 'text-gray-400'
+                  note.pinned ? 'text-red-700' : 'text-gray-400'
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
