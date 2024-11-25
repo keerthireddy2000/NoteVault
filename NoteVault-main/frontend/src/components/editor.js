@@ -284,25 +284,25 @@ const Editor = () => {
       {/* Modal for creating a new category */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/3">
+          <div className="bg-black p-6 rounded-lg shadow-lg w-1/3">
             <h3 className="text-2xl mb-4">Create New Category</h3>
             <input
               type="text"
-              className="w-full p-2 mb-4 bg-gray-700 border border-gray-600 rounded"
-              placeholder="Enter new category"
+              className="w-full p-2 mb-4 bg-white border border-gray-600 text-black placeholder-gray-400 rounded"
+              placeholder="Enter category title"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
             />
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setIsModalOpen(false)} // Close modal
-                className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+                className="bg-white hover:bg-red-600 text-black py-2 px-4 rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleNewCategory} // Save new category
-                className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+                className="bg-white hover:bg-green-700 text-black py-2 px-4 rounded"
               >
                 Save
               </button>

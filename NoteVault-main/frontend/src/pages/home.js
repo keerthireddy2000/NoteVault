@@ -366,7 +366,7 @@ const handleSaveCategory = async (categoryId) => {
 
             className={`flex items-center py-2 px-4 rounded-full ${
 
-              selectedCategoryId === category.id ? 'bg-black' : 'bg-gray-700'
+              selectedCategoryId === category.id ? 'bg-black text-white'  : 'bg-white border border-black'
 
             }`}
 
@@ -377,7 +377,7 @@ const handleSaveCategory = async (categoryId) => {
         
 
             {category.id && category.id !== 'all' && (
-
+              
               <div className="ml-2">
 
                 <button
@@ -390,7 +390,7 @@ const handleSaveCategory = async (categoryId) => {
 
                   }}
 
-                  className="text-white text-xl p-0 bg-gray-500 rounded-full w-4"
+                  className="text-black text-xl p-0 bg-gray-200 rounded-full w-4"
 
                 >
 
@@ -552,13 +552,13 @@ const handleSaveCategory = async (categoryId) => {
           <div className="flex justify-end space-x-4">
             <button
               onClick={() => setIsModalOpen(false)} 
-              className="bg-white text-black py-2 px-4 rounded hover:bg-gray-300"
+              className="bg-white text-black py-2 px-4 rounded hover:bg-red-600"
             >
               Cancel
             </button>
             <button
                onClick={() => editingCategoryId ? handleSaveCategory(editingCategoryId) : handleSaveCategory("")} 
-              className="bg-white text-black py-2 px-4 rounded hover:bg-gray-300"
+              className="bg-white text-black py-2 px-4 rounded hover:bg-green-700"
               
               >
                  {editingCategoryId ? 'Save Changes' : 'Save'}
@@ -576,7 +576,7 @@ const handleSaveCategory = async (categoryId) => {
 
 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
 
-  <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-1/3">
+  <div className="bg-black p-6 rounded-lg shadow-lg w-1/3">
 
     <h3 className="text-2xl mb-4 text-white">
 
