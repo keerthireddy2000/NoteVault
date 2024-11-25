@@ -219,7 +219,7 @@ const Editor = () => {
         {/* Category Input */}
         <div className="mb-4">
           <label className="block text-black text-xl text-sm mb-2" htmlFor="category">
-            Select Category
+            Category
           </label>
           <div className="flex items-center">
             <select

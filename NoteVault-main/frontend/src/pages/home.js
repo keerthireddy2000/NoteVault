@@ -545,13 +545,13 @@ const handleSaveCategory = async (categoryId) => {
           filteredNotes.map((note) => (
             <div
               key={note._id}
-              className="bg-gray-200 p-4 rounded-lg shadow-lg relative cursor-pointer"
+              className="bg-gray-100 p-4 rounded-lg border border-gray-400 shadow-lg relative cursor-pointer"
               onClick={() => handleNoteClick(note.id)} 
             >
               
               <h3 className="text-xl font-bold text-black">{note.title}</h3> 
-              <p className="text-gray-600">{note.content}</p> 
-              <span className="text-sm text-gray-400">#{categoriesDict[note.category]}</span> 
+              <p className="text-gray-700">{note.content}</p> 
+              <span className="text-sm text-gray-700">#{categoriesDict[note.category]}</span> 
 
               {/* Pin Icon */}
               <FaThumbtack
