@@ -25,7 +25,8 @@ def register(request):
     data = request.data
     try:
         # Create the user
-        user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password'])
+        user = User.objects.create_user(username=data['username'], email=data['email'], password=data['password'],first_name=data['first_name'],  # Add first name
+            last_name=data['last_name'])
         user.save()
 
         # Generate tokens for the newly created user
@@ -94,6 +95,8 @@ def profile(request):
         return Response({
             'username': user.username,
             'email': user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
         })
 
     elif request.method == 'PUT':
@@ -101,11 +104,18 @@ def profile(request):
         data = request.data
         user = request.user
         email = data.get('email')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
         if email:
             user.email = email
-            user.save()
-            return Response({'message': 'Email updated successfully'}, status=status.HTTP_200_OK)
-        return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        if first_name:
+            user.first_name = first_name
+        if last_name:
+            user.last_name = last_name
+
+        user.save()
+        return Response({'message': 'Email updated successfully'}, status=status.HTTP_200_OK)
+    return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)   
 
 # Create Category
 @api_view(['POST'])

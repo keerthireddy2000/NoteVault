@@ -1,4 +1,5 @@
 import { React, useState } from 'react';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/home';
 import Login from './pages/login';
