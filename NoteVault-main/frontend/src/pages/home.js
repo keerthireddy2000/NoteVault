@@ -398,7 +398,7 @@ const handleSaveCategory = async (categoryId) => {
 
             className={`flex items-center py-2 px-4 rounded-full ${
 
-              selectedCategoryId === category.id ? 'bg-black text-white'  : 'bg-white border border-black'
+              selectedCategoryId === category.id || (category.id === undefined && selectedCategoryId === 'all')? 'bg-black text-white'  : 'bg-white border border-black'
 
             }`}
 
