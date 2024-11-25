@@ -20,6 +20,7 @@ const Home = () => {
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
+  const [categoriesDict, setCategoriesDict] = useState([{ }]); 
 
   const categoriesToShow = 3; 
 
@@ -29,6 +30,10 @@ const Home = () => {
         const categoriesResponse = await apiCallWithToken('http://localhost:8000/categories/');
         const categoriesData = await categoriesResponse.json();
         setCategories([{ _id: 'all', title: 'All' }, ...categoriesData]);
+        setCategoriesDict(categoriesData.reduce((acc, item) => {
+          acc[item.id] = item.title;
+          return acc;
+        }, {}));
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -546,7 +551,7 @@ const handleSaveCategory = async (categoryId) => {
               
               <h3 className="text-xl font-bold text-black">{note.title}</h3> 
               <p className="text-gray-600">{note.content}</p> 
-              <span className="text-sm text-gray-400">#{note.category.title}</span> 
+              <span className="text-sm text-gray-400">#{categoriesDict[note.category]}</span> 
 
               {/* Pin Icon */}
               <FaThumbtack
