@@ -124,34 +124,45 @@ def create_category(request):
 
 
 
-
-
 @api_view(['PUT'])
+
 @permission_classes([IsAuthenticated])
+
 def edit_category(request, category_id):
+
     try:
+
         print("cat", category_id)
+
         category = Category.objects.get(id=category_id)
+
         print("cat", category)
+
     except Category.DoesNotExist:
+
         return Response({"detail": "Category not found."}, status=status.HTTP_404_NOT_FOUND)
 
+
+
     if category.user != request.user:
+
         return Response({"detail": "You are not authorized to edit this category."}, status=status.HTTP_403_FORBIDDEN)
+
+
 
     serializer = CategorySerializer(category, data=request.data)
 
+
+
     if serializer.is_valid():
+
         serializer.save()
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
-
 
 # Get all categories for the logged-in user (protected)
 @api_view(['GET'])
@@ -258,17 +269,31 @@ def delete_note(request, note_id):
     return Response({'message': 'Note deleted successfully'}, status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
+
 @permission_classes([IsAuthenticated])
+
 def delete_category(request, category_id):
+
     try:
+
         category = Category.objects.get(id=category_id, user=request.user)
+
     except Category.DoesNotExist:
+
         return Response({'message': 'Category not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
+
     notes = Note.objects.filter(category=category) 
+
     notes.delete()
 
 
+
+
+
     category.delete()
+
+
 
     return Response({'message': 'Category and associated notes deleted successfully'}, status=status.HTTP_200_OK)

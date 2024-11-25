@@ -99,10 +99,10 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex bg-gray-50 justify-center ">
+    <div className="flex items-center justify-center min-h-screen bg-black">
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
-      <div className=" mt-40 w-full max-w-sm">
-        <h1 className="text-3xl text-center text-black font-bold ">Profile</h1>
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h1 className="text-3xl text-center text-white font-bold mb-6">Profile</h1>
 
         <div className="mb-4">
           <label className="block text-gray-400 text-sm font-semibold mb-2">Username</label>
@@ -147,11 +147,12 @@ const Profile = () => {
 
         <button
           onClick={() => setIsResetPasswordOpen(true)} // Open reset password dialog
-          className="mt-8 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Reset Password
         </button>
 
+        {/* Reset Password Dialog */}
         {isResetPasswordOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
             <div className="bg-white p-6 rounded-md w-full max-w-md">

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -19,7 +21,40 @@ const Login = () => {
     e.preventDefault();
     setError(''); // Clear previous errors
 
-    try {
+        if (!username) {
+        toast.info("Please fill in the username" , {
+          style: {
+            backgroundColor: '#2196F3',  
+            color: 'white',               
+            borderRadius: '8px',          
+            padding: '10px',             
+          },
+            position: "top-center",
+            autoClose: 2000 , 
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+      });
+        return;
+      } else if (!password) {
+        toast.info("Please fill in password." , {
+          style: {
+            backgroundColor: '#2196F3',  
+            color: 'white',               
+            borderRadius: '8px',          
+            padding: '10px',             
+          },
+            position: "top-center",
+            autoClose: 2000 , 
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+      });
+        return;
+    }
+    try{
       const response = await fetch('http://localhost:8000/login/', {
         method: 'POST',
         headers: {
@@ -73,7 +108,7 @@ const Login = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-2/3 p-2 ml-[36px] bg-white text-black rounded outline-none"
                 placeholder="Enter your username"
-                required
+                
               />
             </div>
             <div className="mb-4 flex items-center">
@@ -84,7 +119,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-2/3 p-2 ml-[36px] bg-white text-black rounded outline-none"
                 placeholder="Enter your password"
-                required
+                
               />
             </div>
             <div className="text-right text-white">
@@ -99,6 +134,7 @@ const Login = () => {
               >
                 Login
               </button>
+              <ToastContainer />
             </div>
             <div className="mt-4 text-center text-white">
               New user?{' '}

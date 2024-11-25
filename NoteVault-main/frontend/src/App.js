@@ -14,7 +14,7 @@ function App() {
   // Custom component to determine when to show the Header
   const ConditionalHeader = () => {
     const location = useLocation();
-    const hideHeaderPaths = ['/login', '/signup'];
+    const hideHeaderPaths = ['/','/login', '/signup'];
     return !hideHeaderPaths.includes(location.pathname) ? (
       <Header isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
     ) : null;
@@ -26,7 +26,7 @@ function App() {
         {/* Render the header conditionally */}
         <ConditionalHeader />
         <Routes>
-          <Route path="/" element={<h1 className="text-white text-center text-4xl">Welcome to NoteVault</h1>} />
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route
