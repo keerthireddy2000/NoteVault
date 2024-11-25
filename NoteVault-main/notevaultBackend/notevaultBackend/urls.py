@@ -18,4 +18,5 @@ urlpatterns = [
     path('notes/delete/<int:note_id>/', views.delete_note, name='delete_note'),  # DELETE delete note
     path('categories/update/<int:category_id>/', views.edit_category, name='edit_category'),
     path('categories/delete/<int:category_id>/', views.delete_category, name='delete_category'),
+    path('notes/toggle-pin/<int:note_id>/', views.toggle_pin, name='toggle_pin'),  # POST toggle pin
 ]

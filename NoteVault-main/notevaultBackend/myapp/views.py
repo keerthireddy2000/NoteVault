@@ -178,6 +178,7 @@ def create_note(request):
     title = request.data.get('title')
     content = request.data.get('content')
     category_id = request.data.get('category')  # Ensure categoryId is sent from frontend
+    pinned = request.data.get('pinned', False)
 
     # Check if all fields are provided
     if not title or not content or not category_id:
@@ -194,7 +195,8 @@ def create_note(request):
         title=title,
         content=content,
         category=category,  # Assign the category to the note
-        user=request.user
+        user=request.user,
+        pinned=bool(pinned)
     )
     
     # Serialize and return the created note
@@ -202,11 +204,28 @@ def create_note(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+# toggle_pin function to pin or unpin a note
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def toggle_pin(request, note_id):
+    try:
+        # Fetch the note by ID for the logged-in user
+        note = Note.objects.get(id=note_id, user=request.user)
+    except Note.DoesNotExist:
+        return Response({'error': 'Note not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Toggle the pinned status
+    note.pinned = not note.pinned
+    note.save()
+
+    return Response({'message': 'Pin status updated', 'pinned': note.pinned}, status=status.HTTP_200_OK)
+
+
 # Get all notes for the logged-in user
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_notes(request):
-    notes = Note.objects.filter(user=request.user)
+    notes = Note.objects.filter(user=request.user).order_by('-pinned')
     serializer = NoteSerializer(notes, many=True)
     return Response(serializer.data)
 
@@ -218,7 +237,7 @@ def get_notes_by_category(request, category_id):
         category = Category.objects.get(id=category_id, user=request.user)
         
         # Fetch all notes that belong to this category and the authenticated user
-        notes = Note.objects.filter(category=category, user=request.user)
+        notes = Note.objects.filter(category=category, user=request.user).order_by('-pinned')
         
         # Serialize the notes
         serializer = NoteSerializer(notes, many=True)

@@ -14,6 +14,7 @@ class Note(models.Model):
     content = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)  # Note can be associated with a category
     user = models.ForeignKey(User, on_delete=models.CASCADE,default=0)
+    pinned = models.BooleanField(default=False)  # New pinned field
 
     def __str__(self):
         return self.title

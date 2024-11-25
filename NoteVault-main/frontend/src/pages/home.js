@@ -71,11 +71,43 @@ const Home = () => {
   }, [searchQuery, notes]);
 
   
-  const togglePin = (noteId) => {
+  const togglePin = async (noteId) => {
     const updatedNotes = notes.map((note) =>
-      note._id === noteId ? { ...note, pinned: !note.pinned } : note
+      note.id === noteId ? { ...note, pinned: !note.pinned } : note
     );
     setNotes(updatedNotes);
+    
+    try{
+      // Send a request to the backend to toggle the pinned status
+    const response = await fetch(`http://localhost:8000/notes/toggle-pin/${noteId}/`, {
+      method: 'POST',
+      headers: {
+        
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json', // Send the JWT token for authentication
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to toggle pin status on the server');
+    }
+
+    const data = await response.json();
+    console.log('Pin status updated on server:', data);
+    window.location.reload();
+    }catch(error){
+
+      console.error('Error toggling pin status:', error);
+
+    // Revert the optimistic update in case of an error
+    const revertedNotes = notes.map((note) =>
+      note.id === noteId ? { ...note, pinned: !note.pinned } : note
+    );
+    setNotes(revertedNotes);
+      
+
+    }
+    
   };
 
 
@@ -521,7 +553,11 @@ const handleSaveCategory = async (categoryId) => {
                 className={`absolute top-2 right-2 cursor-pointer ${
                   note.pinned ? 'text-yellow-400' : 'text-gray-400'
                 }`}
-                onClick={() => togglePin(note._id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log(note.id)
+                  togglePin(note.id)
+                }}
               />
             </div>
           ))
