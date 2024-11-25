@@ -592,13 +592,13 @@ const handleSaveCategory = async (categoryId) => {
           />
           <div className="flex justify-end space-x-4">
             <button
-              onClick={() => setIsModalOpen(false)} 
+              onClick={() => {setIsModalOpen(false);window.location.reload()}}
               className="bg-white text-black py-2 px-4 rounded hover:bg-red-600"
             >
               Cancel
             </button>
             <button
-               onClick={() => editingCategoryId ? handleSaveCategory(editingCategoryId) : handleSaveCategory("")} 
+               onClick={() => {editingCategoryId ? handleSaveCategory(editingCategoryId) : handleSaveCategory("");window.location.reload()}} 
               className="bg-white text-black py-2 px-4 rounded hover:bg-green-700"
               
               >
