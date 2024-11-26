@@ -7,6 +7,8 @@ from .models import Category, Note
 from .serializers import CategorySerializer, NoteSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from django.contrib.auth.hashers import check_password
 
 # # Register User
 # @api_view(['POST'])
@@ -50,11 +52,6 @@ def login(request):
     from rest_framework_simplejwt.views import TokenObtainPairView
     return TokenObtainPairView.as_view()(request._request)
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth.hashers import check_password
 
 # Reset Password API
 @api_view(['POST'])
@@ -135,43 +132,20 @@ def create_category(request):
 
 
 @api_view(['PUT'])
-
 @permission_classes([IsAuthenticated])
-
 def edit_category(request, category_id):
-
     try:
-
         print("cat", category_id)
-
         category = Category.objects.get(id=category_id)
-
         print("cat", category)
-
     except Category.DoesNotExist:
-
         return Response({"detail": "Category not found."}, status=status.HTTP_404_NOT_FOUND)
-
-
-
     if category.user != request.user:
-
         return Response({"detail": "You are not authorized to edit this category."}, status=status.HTTP_403_FORBIDDEN)
-
-
-
     serializer = CategorySerializer(category, data=request.data)
-
-
-
     if serializer.is_valid():
-
         serializer.save()
-
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Get all categories for the logged-in user (protected)
@@ -326,3 +300,30 @@ def delete_category(request, category_id):
 
 
     return Response({'message': 'Category and associated notes deleted successfully'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_notes(request):
+    """
+    Search notes by title or category.
+    Query parameters:
+    - `q`: Search query (matches title or category name).
+    """
+    query = request.query_params.get('q', None)  # Get the search query
+
+    if not query:
+        return Response({'error': 'Search query parameter `q` is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Filter notes for the authenticated user
+    notes = Note.objects.filter(user=request.user)
+
+    # Perform case-insensitive search on title or category
+    filtered_notes = notes.filter(
+        title__icontains=query
+    ) | notes.filter(
+        category__title__icontains=query
+    )
+
+    # Serialize and return the filtered notes
+    serializer = NoteSerializer(filtered_notes, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
