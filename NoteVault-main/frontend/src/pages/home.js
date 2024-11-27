@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { apiCallWithToken } from '../api';
-import { toast } from 'react-toastify';
+import { toast , ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
@@ -48,17 +48,21 @@ const Home = () => {
         let notesResponse;
         if (selectedCategoryId === undefined || selectedCategoryId === 'all') {
           notesResponse = await apiCallWithToken('http://localhost:8000/notes/');
-        }
-        else {
+        } else {
           notesResponse = await apiCallWithToken(`http://localhost:8000/notes/category/${selectedCategoryId}/`);
         }
         const notesData = await notesResponse.json();
-        setNotes(notesData);
+        const pinnedNotes = notesData.filter(note => note.pinned);
+        const unpinnedNotes = notesData.filter(note => !note.pinned);
+        const sortedPinnedNotes = pinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+        const sortedUnpinnedNotes = unpinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+        const sortedNotes = [...sortedPinnedNotes, ...sortedUnpinnedNotes];
+        setNotes(sortedNotes);
       } catch (error) {
         console.error('Error fetching notes:', error);
       }
     };
-
+  
     fetchNotes();
   }, [selectedCategoryId]);
 
@@ -73,34 +77,41 @@ const Home = () => {
 
   const togglePin = async (noteId) => {
     const updatedNotes = notes.map((note) =>
-      note.id === noteId ? { ...note, pinned: !note.pinned } : note
-    );
-    setNotes(updatedNotes);
+    note.id === noteId ? { ...note, pinned: !note.pinned } : note
+  );
+  const pinnedNotes = updatedNotes.filter(note => note.pinned);
+  const unpinnedNotes = updatedNotes.filter(note => !note.pinned);
 
+  const sortedPinnedNotes = pinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+  const sortedUnpinnedNotes = unpinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+
+  const sortedNotes = [...sortedPinnedNotes, ...sortedUnpinnedNotes];
+
+  setNotes(sortedNotes);
+  
     try {
       const response = await fetch(`http://localhost:8000/notes/toggle-pin/${noteId}/`, {
         method: 'POST',
         headers: {
-
           Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to toggle pin status on the server');
       }
       const data = await response.json();
       console.log('Pin status updated on server:', data);
-      window.location.reload();
     } catch (error) {
       console.error('Error toggling pin status:', error);
       const revertedNotes = notes.map((note) =>
-        note.id === noteId ? { ...note, pinned: !note.pinned } : note
+        note._id === noteId ? { ...note, pinned: !note.pinned } : note
       );
       setNotes(revertedNotes);
     }
   };
+  
 
   const handleSaveCategory = async (categoryId) => {
     if (newCategoryTitle.trim()) {
@@ -216,6 +227,12 @@ const Home = () => {
     setIsDeleteModalOpen(false);
     setCategoryToDelete(null);
   };
+
+  const handleCancel = () => {
+    setIsModalOpen(false); 
+    setNewCategoryTitle('');
+    setEditingCategoryId(null); 
+  }
   const dropdownRef = useRef(null);
 
   return (
@@ -326,8 +343,6 @@ const Home = () => {
               <h3 className="text-xl font-bold text-black">{note.title}</h3>
               <p className="text-gray-700">{note.content}</p>
               <span className="text-sm text-gray-700">#{categoriesDict[note.category]}</span>
-
-              {/* Pin Icon */}
               <FaThumbtack
                 className={`absolute top-2 right-2 cursor-pointer ${note.pinned ? 'text-red-700' : 'text-gray-400'
                   }`}
@@ -364,22 +379,24 @@ const Home = () => {
             />
             <div className="flex justify-end space-x-4">
               <button
-                onClick={() => { setIsModalOpen(false); window.location.reload() }}
+                onClick={() => { handleCancel()}}
                 className="bg-white text-black py-2 px-4 rounded hover:bg-red-600"
               >
                 Cancel
               </button>
               <button
-                onClick={() => { editingCategoryId ? handleSaveCategory(editingCategoryId) : handleSaveCategory(""); window.location.reload() }}
+                onClick={() => { editingCategoryId ? handleSaveCategory(editingCategoryId) : handleSaveCategory(""); }}
                 className="bg-white text-black py-2 px-4 rounded hover:bg-green-700"
 
               >
-                {editingCategoryId ? 'Save Changes' : 'Save'}
+                {editingCategoryId ? 'Update' : 'Save'}
               </button>
             </div>
           </div>
         </div>
       )}
+
+
       {isDeleteModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-black p-6 rounded-lg shadow-lg w-1/3">
@@ -402,6 +419,7 @@ const Home = () => {
           </div>
         </div>
       )}
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
     </div>
   );
 };

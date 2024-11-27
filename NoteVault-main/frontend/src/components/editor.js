@@ -7,23 +7,22 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 const Editor = () => {
-  const { noteId } = useParams(); // Get noteId from the URL params
+  const { noteId } = useParams(); 
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState(''); // Set category as the category ID
-  const [categories, setCategories] = useState([]); // List of categories
+  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([]);
   const [note, setNote] = useState('');
-  const [newCategory, setNewCategory] = useState(''); // To create a new category
-  const [isModalOpen, setIsModalOpen] = useState(false); // Manage modal state
+  const [newCategory, setNewCategory] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const navigate = useNavigate();
 
-  // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await apiCallWithToken('http://localhost:8000/categories', { method: 'GET' });
         if (response.ok) {
           const data = await response.json();
-          setCategories(data); // Store categories
+          setCategories(data); 
         } else {
           console.error('Token expired, logging out...');
           logout();
@@ -34,8 +33,7 @@ const Editor = () => {
     };
     fetchCategories();
   }, []);
-
-  // Fetch the existing note if noteId is provided
+  
   useEffect(() => {
     if (noteId) {
       const fetchNote = async () => {
@@ -44,7 +42,7 @@ const Editor = () => {
           if (response.ok) {
             const data = await response.json();
             setTitle(data.title);
-            setCategory(data.category); // Set the category ID from the note data
+            setCategory(data.category);
             setNote(data.content);
           } else {
             console.error('Failed to fetch note');
@@ -57,7 +55,6 @@ const Editor = () => {
     }
   }, [noteId]);
 
-  // Handle new category creation
   const handleNewCategory = async () => {
     try {
       const response = await apiCallWithToken('http://localhost:8000/categories/create/', {
@@ -67,10 +64,10 @@ const Editor = () => {
 
       if (response.ok) {
         const categoryData = await response.json();
-        setCategories([...categories, categoryData]); // Add the new category to the list
-        setCategory(categoryData.id); // Set it as the selected category
-        setNewCategory(''); // Clear the input field
-        setIsModalOpen(false); // Close the modal
+        setCategories([...categories, categoryData]); 
+        setCategory(categoryData.id); 
+        setNewCategory('');
+        setIsModalOpen(false);
       } else {
         console.error('Failed to create category');
       }
@@ -79,17 +76,13 @@ const Editor = () => {
     }
   };
 
-  // Reset the form
   const handleReset = () => {
     // setTitle('');
     // setCategory('');
     setNote('');
   };
 
-  // Handle saving the note
   const handleSave = async () => {
-   
-    
     if (!title) {
       toast.info("Please fill in the title for the note." ,{
         style: {
@@ -141,7 +134,8 @@ const Editor = () => {
     }
 
     try {
-      const response = await apiCallWithToken(noteId ? `http://localhost:8000/notes/update/${noteId}/` : 'http://localhost:8000/notes/create/', {
+      const response = await apiCallWithToken(noteId ? `http://localhost:8000/notes/update/${noteId}/` 
+                                                      : 'http://localhost:8000/notes/create/', {
         method: noteId ? 'PUT' : 'POST',
         body: JSON.stringify({ title, category, content: note }),
       });
@@ -149,8 +143,8 @@ const Editor = () => {
       if (response.ok) {
         const savedNote = await response.json();
         console.log('Note saved:', savedNote);
-        handleReset(); // Reset the form after saving
-        navigate('/home'); // Redirect back to the home page
+        handleReset(); 
+        navigate('/home');
       } else {
         console.error('Failed to save note');
       }
@@ -166,7 +160,7 @@ const Editor = () => {
         if (response.ok) {
           console.log('Note deleted successfully');
           toast.success('Note deleted successfully');
-          navigate('/home'); // Redirect back to the home page
+          navigate('/home'); 
         } else {
           console.error('Failed to delete note');
         }
@@ -202,7 +196,6 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Title Input */}
         <div className="mb-4">
           <label className="block text-black text-xl text-sm mb-2" htmlFor="title">
             Title
@@ -218,7 +211,6 @@ const Editor = () => {
           />
         </div>
 
-        {/* Category Input */}
         <div className="mb-4">
           <label className="block text-black text-xl text-sm mb-2" htmlFor="category">
             Category
@@ -227,8 +219,8 @@ const Editor = () => {
             <select
               id="category"
               className="w-3/4 p-2 bg-white border text-black border-black rounded"
-              value={category} // Bind the selected category ID here
-              onChange={(e) => setCategory(e.target.value)} // Set selected category ID
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               required
             >
               <option value="">Select a category</option>
@@ -238,18 +230,14 @@ const Editor = () => {
                 </option>
               ))}
             </select>
-
-            {/* Button to open modal for new category */}
             <button
-              onClick={() => setIsModalOpen(true)} // Open the modal when clicked
-              className="ml-4 bg-black hover:bg-gray-600 border border-black text-white py-2 px-4 rounded"
+              onClick={() => setIsModalOpen(true)}
+              className="ml-4 bg-black hover:bg-green-600 border border-black text-white py-2 px-4 rounded"
             >
               New Category
             </button>
           </div>
         </div>
-
-        {/* Note Input */}
         <div className="mb-4">
           <label className="block text-black text-xl text-sm mb-2" htmlFor="note">
             Note Content
@@ -263,27 +251,24 @@ const Editor = () => {
             required
           />
         </div>
-
-        {/* Action Buttons */}
+        
         <div className="flex justify-end space-x-4">
         <button
               onClick={handleReset}
-              className="ml-4 bg-black hover:bg-gray-600 border border-black text-white  py-2 px-4 rounded"
+              className="ml-4 bg-black hover:bg-gray-500 border border-black text-white  py-2 px-4 rounded"
             >
               Reset
             </button>
 
           <button
             onClick={handleSave}
-            className="bg-black hover:bg-gray-600 border border-black text-white py-2 px-4 rounded"
+            className="bg-black hover:bg-green-700 border border-black text-white py-2 px-4 rounded"
           >
-            Save
+            {noteId ? 'Update' : 'Save'}
           </button>
-          <ToastContainer />
+          <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
         </div>
       </div>
-
-      {/* Modal for creating a new category */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-black p-6 rounded-lg shadow-lg w-1/3">
@@ -297,13 +282,13 @@ const Editor = () => {
             />
             <div className="flex justify-end space-x-4">
               <button
-                onClick={() => setIsModalOpen(false)} // Close modal
+                onClick={() => setIsModalOpen(false)}
                 className="bg-white hover:bg-red-600 text-black py-2 px-4 rounded"
               >
                 Cancel
               </button>
               <button
-                onClick={handleNewCategory} // Save new category
+                onClick={() => {handleNewCategory}}
                 className="bg-white hover:bg-green-700 text-black py-2 px-4 rounded"
               >
                 Save
