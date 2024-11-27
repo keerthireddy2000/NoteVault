@@ -288,7 +288,7 @@ const Editor = () => {
                 Cancel
               </button>
               <button
-                onClick={() => {handleNewCategory}}
+                onClick={handleNewCategory}
                 className="bg-white hover:bg-green-700 text-black py-2 px-4 rounded"
               >
                 Save
