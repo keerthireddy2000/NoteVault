@@ -10,16 +10,15 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to home page if already authenticated
     const token = localStorage.getItem('token');
     if (token) {
-      navigate('/home'); // Redirect if token exists
+      navigate('/home'); 
     }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError('');
 
         if (!username) {
         toast.info("Please fill in the username" , {
@@ -66,12 +65,9 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
 
-        // Save tokens and username to localStorage
         localStorage.setItem('username', username);
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh', data.refresh);
-
-        // Redirect to home page after successful login
         navigate('/home');
       } else {
         const result = await response.json();
@@ -85,9 +81,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
-      {/* Content Wrapper */}
       <div className="flex justify-between w-8/12">
-        {/* Left Section */}
         <div className="flex flex-col items-center w-1/2 mt-5">
           <img src="/logo.jpeg" alt="Logo" className="w-40 h-28 mb-4" />
           <h1 className="text-5xl text-white font-bold mb-3">NOTE VAULT</h1>
@@ -95,8 +89,6 @@ const Login = () => {
             Secure your thoughts, unlock your potential
           </h3>
         </div>
-
-        {/* Right Section */}
         <div className="bg-black p-8 rounded-md w-full max-w-md border-2 border-white">
           {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
           <form onSubmit={handleSubmit}>

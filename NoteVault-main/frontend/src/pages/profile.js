@@ -15,16 +15,15 @@ const Profile = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState(""); // New state for first name
-  const [lastName, setLastName] = useState(""); // New state for last name
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState({});
-  const [image, setImage] = useState(null); // State to store the profile image
+  const [image, setImage] = useState(null);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch profile data
     const fetchProfile = async () => {
       try {
         const response = await fetch('http://localhost:8000/profile/', {
@@ -75,7 +74,7 @@ const Profile = () => {
 
       if (response.ok) {
         toast.success('Email updated successfully');
-        setIsEditingEmail(false); // Exit editing mode
+        setIsEditingEmail(false);
       } else {
         const data = await response.json();
         toast.error(data.error || 'Failed to update email');
@@ -158,7 +157,7 @@ const Profile = () => {
 
     if (response.ok) {
         toast.success('Password reset successfully');
-        setIsResetPasswordOpen(false); // Close dialog
+        setIsResetPasswordOpen(false);
     } else {
         const data = await response.json();
         toast.error(data.error || 'Failed to reset password');
@@ -174,53 +173,45 @@ const Profile = () => {
     <div className="flex items-center justify-center min-h-screen bg-black">
     <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
     <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg relative -top-12" >
-      <h1 className="text-3xl text-center text-white font-bold mb-6">Profile</h1>
+      <h1 className="text-3xl text-center text-white font-bold mb-0">Profile</h1>
       <button
             onClick={() => navigate('/')}
             className="absolute top-2 right-2 bg-white hover:bg-red-500 text-black py-2 px-4 rounded"
           >
             <FaTimes className="text-2xl text-black" />
-          </button>
-        {/* Profile Image Section */}
+      </button>
         <div className="flex justify-center mb-6">
-<div className="relative flex-col items-center">
-  <img
-    src={image ? image : "https://cdn-icons-png.flaticon.com/512/149/149071.png"} // Default image if no profile image
-    alt="Profile"
-    className="w-32 h-32 rounded-full object-cover"
-  />
-  <div  
-  className="flex justify-center space-x-4 mt-[3mm]">
-    {/* Upload Icon */}
-    <i
-      className="fas fa-upload text-black black p-2 rounded-full shadow-lg cursor-pointer"
-      onClick={() => document.getElementById("file-input").click()}
-      title="Upload Image"
-    ></i>
-
-    {/* Remove Icon */}
-    <i
-      className="fas fa-trash text-black black p-2 rounded-full shadow-lg cursor-pointer"
-      onClick={handleRemoveImage}
-      title="Remove Image"
-    ></i>
-  </div>
-  <input
-    type="file"
-    id="file-input"
-    onChange={handleImageUpload}
-    className="hidden"
-  />
-</div>
-</div>
-
-
-
-
-      {/* First Name */}
+            <div className="relative flex-col items-center">
+              <img
+                src={image ? image : "https://cdn-icons-png.flaticon.com/512/149/149071.png"}
+                alt="Profile"
+                className="w-32 h-32 rounded-full object-cover"
+              />
+              <div  
+              className="flex justify-center space-x-4 mt-[3mm]">
+                <i
+                  className="fas fa-upload text-black black p-2 rounded-full shadow-lg cursor-pointer"
+                  onClick={() => document.getElementById("file-input").click()}
+                  title="Upload Image"
+                ></i>
+                <i
+                  className="fas fa-trash text-black black p-2 rounded-full shadow-lg cursor-pointer"
+                  onClick={handleRemoveImage}
+                  title="Remove Image"
+                ></i>
+              </div>
+              <input
+                type="file"
+                id="file-input"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </div>
+            </div>
       <div className="mb-4">
-        <label className="block text-black-400 text-sm font-semibold mb-2">First Name</label>
+        <label htmlFor="firstName" className="block text-black-400 text-sm font-semibold mb-2">First Name</label>
         <input
+        id="firstName"
           type="text"
           value={firstName}
           placeholder="Enter your first name"
@@ -231,10 +222,11 @@ const Profile = () => {
           className="w-full p-2 bg-white border border-black text-black placeholder-gray-400 rounded"          />
       </div>
 
-      {/* Last Name */}
+
       <div className="mb-4">
-        <label className="block text-black-400 text-sm font-semibold mb-2">Last Name</label>
+        <label htmlFor="lastName" className="block text-black-400 text-sm font-semibold mb-2">Last Name</label>
         <input
+        id="lastName"
           type="text"
           value={lastName}
           placeholder="Enter your last name"
@@ -247,20 +239,14 @@ const Profile = () => {
         />
       </div>
 
-{/* Email */}
-<div className="mb-4">
- <label className="block text-black-400 text-sm font-semibold mb-2">Email</label>
-<p  className="w-full p-2 bg-white border border-black text-black placeholder-gray-400 rounded">{email}</p>
-</div>
-
-
-      {/* Username (Read-only) */}
+      <div className="mb-4">
+      <label className="block text-black-400 text-sm font-semibold mb-2">Email</label>
+      <p  className="w-full p-2 bg-white border border-black text-black placeholder-gray-400 rounded">{email}</p>
+      </div>
       <div className="mb-4">
         <label className="block text-black-400 text-sm font-semibold mb-2">Username</label>
         <p  className="w-full p-2 bg-white border border-black text-black placeholder-gray-400 rounded">{username}</p>
       </div>
-
-      {/* Save and Cancel Buttons */}
       {isEditing && (
         <div className="flex justify-between">
           <button
@@ -277,30 +263,24 @@ const Profile = () => {
           </button>
         </div>
       )}
-
-      {/* Reset Password Button */}
       <button
-        onClick={() => setIsResetPasswordOpen(true)} // Open reset password dialog
+        onClick={() => setIsResetPasswordOpen(true)}
         className="w-full bg-black text-white py-2 rounded mt-[3mm] hover:bg-gray-600"
       >
         Reset Password
       </button>
-
-              {/* Reset Password Dialog */}
               {isResetPasswordOpen && (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
           <div className="bg-white p-6 rounded-md w-full max-w-md">
           <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl text-black font-semibold">Reset Password</h2>
               <button
-              onClick={() => setIsResetPasswordOpen(false)} // Close dialog
+              onClick={() => setIsResetPasswordOpen(false)}
               className="text-black hover:text-gray-700 text-lg"
               >
               <IoClose />
               </button>
           </div>
-
-          {/* Current Password */}
           <div className="mb-4 flex items-center">
               <label className="text-black text-sm font-semibold w-1/3">
               Current Password
@@ -313,8 +293,6 @@ const Profile = () => {
               placeholder="Enter current password"
               />
           </div>
-
-          {/* New Password */}
           <div className="mb-4 flex items-center">
               <label className="text-black text-sm font-semibold w-1/3">
               New Password
@@ -327,25 +305,21 @@ const Profile = () => {
               placeholder="Enter new password"
               />
           </div>
-
-          {/* Confirm Password */}
           <div className="mb-4 flex items-center">
               <label className="text-black text-sm font-semibold w-1/3">
               Confirm Password
               </label>
               <input
               type="password"
-              value={confirmPassword} // For simplicity; typically, add a separate state
+              value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-2/3 p-2 bg-white border border-black text-black rounded"
               placeholder="Confirm new password"
               />
           </div>
-
-          {/* Buttons */}
           <div className="flex justify-end space-x-2">
               <button
-              onClick={() => setIsResetPasswordOpen(false)} // Close dialog
+              onClick={() => setIsResetPasswordOpen(false)} 
               className="bg-black text-white py-1 px-4 rounded hover:bg-gray-700"
               >
               Cancel

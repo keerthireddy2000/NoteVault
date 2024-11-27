@@ -159,13 +159,13 @@ const Editor = () => {
     }
   };
 
-  // Handle deleting the note
   const handleDelete = async () => {
     if (noteId) {
       try {
         const response = await apiCallWithToken(`http://localhost:8000/notes/delete/${noteId}/`, { method: 'DELETE' });
         if (response.ok) {
           console.log('Note deleted successfully');
+          toast.success('Note deleted successfully');
           navigate('/home'); // Redirect back to the home page
         } else {
           console.error('Failed to delete note');
@@ -183,12 +183,14 @@ const Editor = () => {
           <h2 className="text-2xl font-bold text-black">{noteId ? 'Edit Note' : 'Create Note'}</h2>
           <div>
             {noteId && (
-              <button
-                onClick={handleDelete}
-                className="bg-white hover:bg-red-500 text-black py-2 px-4 rounded"
-              >
-                <FaTrashAlt className="text-2xl" /> 
-              </button>
+             <button
+             onClick={handleDelete}
+             className="bg-white hover:bg-red-500 text-black py-2 px-4 rounded"
+             aria-label="Delete note"
+             
+           >
+             <FaTrashAlt className="text-2xl" />
+           </button>
             )}
             
             <button
