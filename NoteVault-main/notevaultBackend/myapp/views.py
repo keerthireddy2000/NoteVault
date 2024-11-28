@@ -9,16 +9,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.contrib.auth.hashers import check_password
+import google.generativeai as genai
+import os
 
-
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.contrib.auth.models import User
-from django.http import JsonResponse
-from django.utils.http import urlsafe_base64_encode
-from django.contrib.sites.shortcuts import get_current_site
-from rest_framework.decorators import api_view
-import sys
 
 
 @api_view(['POST'])
@@ -282,3 +275,23 @@ def reset_new_password(request):
     user.set_password(new_password)
     user.save()
     return Response({'message': 'Password reset successfully'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def summarize_text(request):
+    KEY = os.getenv('API_KEY')
+    original_text = request.data.get('text')
+    genai.configure(api_key=KEY)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(f"Act as a professional summarizer. Your task is to condense the following text while retaining key information and personal essence: {original_text}")
+    print(response.text)
+    return Response({'summary': response.text}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def check_text(request):
+    KEY = os.getenv('API_KEY')
+    original_text = request.data.get('text')
+    genai.configure(api_key=KEY)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(f"Correct grammar and spelling: {original_text}")
+    print(response.text)
+    return Response({'correctedText': response.text}, status=status.HTTP_200_OK)  

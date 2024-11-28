@@ -80,17 +80,6 @@ WSGI_APPLICATION = 'notevaultBackend.wsgi.application'
 
 # Database
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'NoteVault',
-#         'CLIENT': {
-#             'host': os.getenv('DATABASE_URL'),
-#             'ssl': True,  # Enable SSL if needed
-#         }
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -98,11 +87,10 @@ DATABASES = {
         'CLIENT': {
             'host': os.getenv('DATABASE_URL'),
             'ssl': True,  # Enable SSL if needed
-            'ssl_cert_reqs': False,
-            
         }
     }
 }
+
 
 CORS_ALLOW_ALL_ORIGINS = True
 

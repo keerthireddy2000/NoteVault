@@ -163,7 +163,7 @@ const Home = () => {
           setIsDeleteModalOpen(false);
           // if (notesToDelete.length > 0) {
             toast.success('Category and its notes deleted successfully')
-          }
+          
           // else {
           //   toast.success('Category deleted successfully');
           // }
