@@ -258,13 +258,23 @@ def reset_new_password(request):
     print("data", request.data)
     data = request.data
     username = data.get('username')
+    email = data.get('email')
     if not username:
         return Response({'error': 'Username is required'}, status=status.HTTP_400_BAD_REQUEST)
+    if not email:
+        return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         user = User.objects.get(username=username)
-        print("User found:", user)
     except User.DoesNotExist:
         return Response({'error': 'User with this username does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'error': 'User with this email does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        user = User.objects.get(username=username, email=email)
+    except User.DoesNotExist:
+        return Response({'error': 'Username and email do not match'}, status=status.HTTP_404_NOT_FOUND)
     new_password = data.get('new_password')
     re_type_password = data.get('re_type_password')
     if not new_password or not re_type_password:

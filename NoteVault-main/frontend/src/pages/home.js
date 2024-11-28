@@ -151,7 +151,7 @@ const Home = () => {
           toast.success(categoryId ? 'Category updated successfully!' : 'Category created successfully');
         } else {
           console.error('Failed to save category');
-          toast.error(response.error || "Error creating category");
+          toast.error(response.error || categoryId ? "Error updating category" : "Error creating category");
         }
       } catch (error) {
         console.error('Error saving category:', error);
@@ -166,17 +166,12 @@ const Home = () => {
       try {
         const response = await apiCallWithToken(`http://localhost:8000/categories/delete/${categoryId}/`, { method: 'DELETE' });
         if (response.ok) {
-          // const notesToDelete = notes.filter(note => note.category === categoryId);
           setCategories(categories.filter((cat) => cat.id !== categoryId));
           setNotes(notes.filter((note) => note.category !== categoryId));
           if (selectedCategoryId === categoryId) { setSelectedCategoryId('all'); }
           setIsDeleteModalOpen(false);
-          // if (notesToDelete.length > 0) {
-            toast.success('Category and its notes deleted successfully')
+          toast.success('Category and its notes deleted successfully')
           
-          // else {
-          //   toast.success('Category deleted successfully');
-          // }
         } else {
           console.error('Failed to delete category');
           toast.error(response.statusText);
@@ -247,11 +242,8 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white text-white flex flex-col items-center p-4">
-      {/* search and filter section of the page */}
       <div className="flex flex-col w-full mb-8 space-y-4">
-        {/* Search Bar */}
         <div className="flex items-center space-x-4 mb-4 w-2/3">
-          {/* Search Bar */}
           <div className="flex items-center bg-white border border-black rounded-full px-4 py-2 flex-grow">
             <input
               type="text"
@@ -262,8 +254,6 @@ const Home = () => {
             />
             <FaSearch className="text-black hover:text-gray-600 mr-2" />
           </div>
-
-          {/* Button */}
           <button
             onClick={() => navigate("/create-note")}
             className="bg-black border-black border text-white py-2 px-4 rounded-full flex items-center"
@@ -271,8 +261,6 @@ const Home = () => {
             <FaPlusCircle className="mr-2" /> Add Note
           </button>
         </div>
-
-        {/* Categories */}
         <div className="flex flex-wrap items-center space-x-2 text-black">
           {visibleCategoryStartIndex > 0 && (
             <button
@@ -289,58 +277,58 @@ const Home = () => {
             )
             .map((category) => (
               <div key={category.id} className="relative group flex w-[150px]">
-  <button
-    onClick={() =>
-      setSelectedCategoryId(category.id ? category.id : "all")
-    }
-    className={`flex items-center justify-between p-2 px-4 rounded-full w-full ${
-      selectedCategoryId === category.id ||
-      (category.id === undefined && selectedCategoryId === "all")
-        ? "bg-black text-white p-[0.6rem]"
-        : "bg-white border border-black"
-    }`}
-  >
-    <span className="truncate max-w-[100px]">{category.title}</span>
-    {category.id && category.id !== "all" && (
-      <div className="ml-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleDropdownToggle(category.id);
-          }}
-          className="text-black text-xl p-0 bg-gray-200 rounded-full w-4"
-        >
-          &#8942;
-        </button>
-      </div>
-    )}
-  </button>
-  {openDropdown === category.id && (
-    <div
-      ref={dropdownRef}
-      className="absolute top-8 right-6 mt-0 bg-white border rounded-md shadow-lg w-28 z-10"
-    >
-      <ul className="space-y-1">
-        <li>
-          <button
-            onClick={() => openEditModal(category.id, category.title)}
-            className="block py-2 px-10 text-black hover:bg-gray-600"
-          >
-            Edit
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => openDeleteModal(category)}
-            className="block py-2 px-8 text-black hover:bg-gray-600 rounded-sm"
-          >
-            Delete
-          </button>
-        </li>
-      </ul>
-    </div>
-  )}
-</div>
+              <button
+                onClick={() =>
+                  setSelectedCategoryId(category.id ? category.id : "all")
+                }
+                className={`flex items-center justify-between p-2 px-4 rounded-full w-full ${
+                  selectedCategoryId === category.id ||
+                  (category.id === undefined && selectedCategoryId === "all")
+                    ? "bg-black text-white p-[0.6rem]"
+                    : "bg-white border border-black"
+                }`}
+              >
+                <span className="truncate max-w-[100px]">{category.title}</span>
+                {category.id && category.id !== "all" && (
+                  <div className="ml-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDropdownToggle(category.id);
+                      }}
+                      className="text-black text-xl p-0 bg-gray-200 rounded-full w-4"
+                    >
+                      &#8942;
+                    </button>
+                  </div>
+                )}
+              </button>
+              {openDropdown === category.id && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute top-8 right-6 mt-0 bg-white border rounded-md shadow-lg w-28 z-10"
+                >
+                  <ul className="space-y-1">
+                    <li>
+                      <button
+                        onClick={() => openEditModal(category.id, category.title)}
+                        className="block py-2 px-10 text-black hover:bg-gray-600"
+                      >
+                        Edit
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => openDeleteModal(category)}
+                        className="block py-2 px-8 text-black hover:bg-gray-600 rounded-sm"
+                      >
+                        Delete
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
 
             ))}
 
@@ -376,77 +364,72 @@ const Home = () => {
                 #{categoriesDict[note.category]}
               </span>
 
-              {/* Pin Icon */}
               <FaThumbtack
                   className="absolute top-2 right-2 cursor-pointer"
                   style={{
-                    color: note.pinned ? '#d9b71e' : 'gray', // Golden yellow when pinned, gray when not
+                    color: note.pinned ? '#d9b71e' : 'gray',
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    togglePin(note.id); // Toggle the pin status
+                    togglePin(note.id); 
                   }}
                 />
             </div>
           ))
         ) : (
           <p className="text-black text-lg">
-            No notes available in this category!!!
+            No notes available in this category !
           </p>
         )}
       </div>
 
       {isModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 relative">
-      {/* Close Button */}
-      <button
-        onClick={() => setIsModalOpen(false)}
-        className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
-        aria-label="Close"
-      >
-        <IoClose />
-      </button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3 relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
+              aria-label="Close"
+            >
+              <IoClose />
+            </button>
 
-      {/* Modal Content */}
-      <h3 className="text-2xl mb-4 text-black">
-        {editingCategoryId ? "Edit Category" : "Create New Category"}
-      </h3>
-      <input
-        type="text"
-        className="w-full p-2 mb-4 bg-white border border-gray-600 text-black placeholder-gray-400 rounded"
-        placeholder="Enter category title"
-        value={newCategoryTitle}
-        onChange={(e) => setNewCategoryTitle(e.target.value)}
-      />
-      <div className="flex justify-end space-x-4">
-        <button
-          onClick={handleCancel}
-          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() =>
-            editingCategoryId
-              ? handleSaveCategory(editingCategoryId)
-              : handleSaveCategory("")
-          }
-          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600"
-        >
-          {editingCategoryId ? "Update" : "Save"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-
+            <h3 className="text-2xl mb-4 text-black">
+              {editingCategoryId ? "Edit Category" : "Create New Category"}
+            </h3>
+            <input
+              type="text"
+              className="w-full p-2 mb-4 bg-white border border-gray-600 text-black placeholder-gray-400 rounded"
+              placeholder="Enter category title"
+              value={newCategoryTitle}
+              onChange={(e) => setNewCategoryTitle(e.target.value)}
+            />
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleCancel}
+                className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() =>
+                  editingCategoryId
+                    ? handleSaveCategory(editingCategoryId)
+                    : handleSaveCategory("")
+                }
+                className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600"
+              >
+                {editingCategoryId ? "Update" : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isDeleteModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
           <div className="relative bg-white p-6 rounded-md w-1/3 text-black border border-black">
-            {/* Close Button */}
+        
             <button
               onClick={() => setIsDeleteModalOpen(false)}
               className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
@@ -466,7 +449,6 @@ const Home = () => {
               >
                 No
               </button>
-
               <button
                 onClick={() => handleDeleteCategory(categoryToDelete.id)}
                 className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
@@ -477,9 +459,6 @@ const Home = () => {
           </div>
         </div>
       )}
-
-
-      
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
     </div>
   );

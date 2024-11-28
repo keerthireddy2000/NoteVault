@@ -211,7 +211,7 @@ const Signup = () => {
                 required
               />
               {showTooltip && (
-                <div className="absolute left-full top-0 ml-2 p-2 bg-gray-900 rounded shadow-lg min-w-96">
+                <div className="absolute left-full top-0 ml-2 p-2 bg-gray-900 rounded shadow-lg min-w-[330px] sm:block hidden">
                   <ul className={`${tooltipClass} text-sm`}>
                     {tooltipContent.map((message, index) => (
                       <li key={index}>{message}</li>
