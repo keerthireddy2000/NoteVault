@@ -162,7 +162,7 @@ const ForgotPassword = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="p-2 w-full sm:w-2/3 bg-white border border-black text-black rounded"
-                placeholder="Enter your username"
+                placeholder="Enter username"
                 required
               />
             </div>
@@ -173,7 +173,7 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="p-2 w-full sm:w-2/3 bg-white border border-black text-black rounded"
-                placeholder="Email"
+                placeholder="Enter email"
                 required
               />
             </div>
@@ -186,7 +186,7 @@ const ForgotPassword = () => {
                 onClick={handlePasswordClick}
                 onBlur={handlePasswordBlur}
                 className="p-2 w-full sm:w-2/3 bg-white border border-black text-black rounded"
-                placeholder="New password"
+                placeholder="Enter new password"
               />
               {showTooltip && (
                 <div className="absolute left-full top-0 ml-2 p-2 bg-gray-900 rounded shadow-lg min-w-[330px] sm:block hidden">
