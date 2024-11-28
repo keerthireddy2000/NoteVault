@@ -64,7 +64,6 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-
         localStorage.setItem('username', username);
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh', data.refresh);

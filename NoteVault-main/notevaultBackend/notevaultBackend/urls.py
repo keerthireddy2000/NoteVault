@@ -20,4 +20,5 @@ urlpatterns = [
     path('categories/update/<int:category_id>/', views.edit_category, name='edit_category'),
     path('categories/delete/<int:category_id>/', views.delete_category, name='delete_category'),
     path('notes/toggle-pin/<int:note_id>/', views.toggle_pin, name='toggle_pin'),  # POST toggle pin
+    path('reset-new-password/', views.reset_new_password, name='reset_new_password'),
 ]

@@ -8,6 +8,7 @@ import ProtectedRoute from './components/protectedRoute';
 import Editor from './components/editor';
 import Header from './components/header';
 import Profile from './pages/profile';
+import ForgotPassword from './components/forgot-password';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access'));
@@ -15,7 +16,7 @@ function App() {
   // Custom component to determine when to show the Header
   const ConditionalHeader = () => {
     const location = useLocation();
-    const hideHeaderPaths = ['/','/login', '/signup'];
+    const hideHeaderPaths = ['/','/login', '/signup', '/forgot-password'];
     return !hideHeaderPaths.includes(location.pathname) ? (
       <Header isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
     ) : null;
@@ -30,6 +31,8 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          
           <Route
             path="/profile"
             element={

@@ -142,7 +142,7 @@ const Home = () => {
           toast.success(categoryId ? 'Category updated successfully!' : 'Category created successfully');
         } else {
           console.error('Failed to save category');
-          toast.error(response.statusText);
+          toast.error(response.error ? response.error : "Error creating category");
         }
       } catch (error) {
         console.error('Error saving category:', error);
@@ -156,16 +156,17 @@ const Home = () => {
       try {
         const response = await apiCallWithToken(`http://localhost:8000/categories/delete/${categoryId}/`, { method: 'DELETE' });
         if (response.ok) {
-          const notesToDelete = notes.filter(note => note.category === categoryId);
+          // const notesToDelete = notes.filter(note => note.category === categoryId);
           setCategories(categories.filter((cat) => cat.id !== categoryId));
           setNotes(notes.filter((note) => note.category !== categoryId));
           if (selectedCategoryId === categoryId) { setSelectedCategoryId('all'); }
           setIsDeleteModalOpen(false);
-          if (notesToDelete.length > 0) {
+          // if (notesToDelete.length > 0) {
             toast.success('Category and its notes deleted successfully')
-          } else {
-            toast.success('Category deleted successfully');
           }
+          // else {
+          //   toast.success('Category deleted successfully');
+          // }
         } else {
           console.error('Failed to delete category');
           toast.error(response.statusText);
