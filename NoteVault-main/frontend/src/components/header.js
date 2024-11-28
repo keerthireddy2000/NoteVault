@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
 
 const Header = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState(localStorage.getItem('username') || '');
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
@@ -13,34 +15,42 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
-    localStorage.removeItem('username');
-    localStorage.removeItem('token');
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
-    setUsername(''); 
+    setUsername("");
     setIsSidebarOpen(false);
-    navigate('/login');
+    navigate("/login");
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('access');
-    const storedUsername = localStorage.getItem('username');
+    const token = localStorage.getItem("access");
+    const storedUsername = localStorage.getItem("username");
     setIsAuthenticated(!!token);
-    setUsername(storedUsername || '');
+    setUsername(storedUsername || "");
   }, [setIsAuthenticated]);
 
   return (
     <div>
       <header className="flex justify-between items-center p-4 bg-black text-white shadow-md">
-        <div className="flex items-center space-x-1 group" onClick={() => {navigate('/')}}>
+        <div
+          className="flex items-center space-x-1 group"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
           <img src="/logo.jpeg" alt="Logo" className="w-16 h-10" />
-          <h1 className="text-2xl font-semibold cursor-default">NoteVault</h1>
+          <h1 className="text-2xl font-semibold cursor-pointer">NoteVault</h1>
         </div>
 
         <div className="flex items-center space-x-4">
           <p className="text-lg">Hello, {username}</p>
-          <button onClick={toggleSidebar} className="text-2xl focus:outline-none">
+          <button
+            onClick={toggleSidebar}
+            className="text-2xl focus:outline-none"
+          >
             {isSidebarOpen ? <FaTimes /> : <FaBars />}
           </button>
         </div>
@@ -48,17 +58,16 @@ const Header = () => {
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-70 z-50"
-          onClick={toggleSidebar} 
+          onClick={toggleSidebar}
         >
           <nav
-        className="fixed top-0 right-0 w-64 bg-black text-white h-full p-4 shadow-lg z-60"
-        onClick={(e) => e.stopPropagation()}
-      >
-            
+            className="fixed top-0 right-0 w-64 bg-black text-white h-full p-4 shadow-lg z-60"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Link
               to="/profile"
-              className="text-center text-lg text-white hover:bg-gray-500 p-2 rounded mt-12 block w-full"
-              onClick={() => setIsSidebarOpen(false)} 
+              className="text-center text-lg text-white hover:bg-gray-500 p-2 rounded mt-14 block w-full"
+              onClick={() => setIsSidebarOpen(false)}
             >
               View Profile
             </Link>
@@ -71,7 +80,11 @@ const Header = () => {
           </nav>
         </div>
       )}
-      <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}></div>
+      <div
+        className={`transition-all duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-0"
+        }`}
+      ></div>
     </div>
   );
 };

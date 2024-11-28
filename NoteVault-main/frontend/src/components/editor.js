@@ -15,10 +15,10 @@ const Editor = () => {
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [note, setNote] = useState('');
-  const [newCategory, setNewCategory] = useState(''); // To create a new category
-  const [isModalOpen, setIsModalOpen] = useState(false); // Manage modal state
+  const [newCategory, setNewCategory] = useState(''); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef(null); // Reference for the speech recognition instance
+  const recognitionRef = useRef(null); 
   const navigate = useNavigate();
   useEffect(() => {
     if ('webkitSpeechRecognition' in window) {
@@ -41,8 +41,6 @@ const Editor = () => {
             interimTranscript += transcript + ' ';
           }
         }
-  
-        // Update the note only with the final transcript
         setNote((prevNote) => prevNote.trim() + ' ' + finalTranscript.trim());
       };
   
@@ -63,7 +61,7 @@ const Editor = () => {
     }
   }, []);
   
-  // Fetch categories on component mount
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -220,49 +218,121 @@ const Editor = () => {
 
   const handleCheckGrammar = async () => {
     try {
+      toast.info("Checking spelling and grammar...", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+  
       const response = await apiCallWithToken('http://localhost:8000/check_grammar/', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ text: note }),
       });
+  
       if (response.ok) {
         const data = await response.json();
-        setNote(data.correctedText); // Update the note with corrected text
-        toast.success("Spelling and grammar checked successfully.", {
-          position: "top-center",
-          autoClose: 2000,
-        });
+  
+        if (data.message === "No fix required!") {
+          toast.info("No fix required!!!", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+        } else if (data.correctedText) {
+          setNote(data.correctedText);
+          toast.success("Spelling and grammar fixed successfully.", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+        } else {
+          toast.error("Unexpected response from the server.", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+        }
       } else {
-        console.error('Failed to check spelling and grammar');
+        const errorData = await response.json();
+        toast.error(
+          errorData.message || "Failed to fix spelling and grammar. Please try again!!!",
+          {
+            position: "top-center",
+            autoClose: 2000,
+          }
+        );
       }
     } catch (error) {
-      console.error('Error checking spelling and grammar:', error);
+      console.error('Error fixing spelling and grammar:', error);
+      toast.error("An error occurred while fixing grammar. Please try again later.", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     }
   };
-
-  // Function to summarize the text
+  
+  
   const handleSummarize = async () => {
     try {
+      // Show a loading notification to indicate the process has started
+      toast.info("Summarizing text...", {
+        position: "top-center",
+        autoClose: 1500,
+      });
+  
+      // Make the API call
       const response = await apiCallWithToken('http://localhost:8000/summarize/', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ text: note }),
       });
+  
+      // Handle the response
       if (response.ok) {
         const data = await response.json();
-        setNote(data.summary); // Update the note with the summary
-        toast.success("Text summarized successfully.", {
-          position: "top-center",
-          autoClose: 2000,
-        });
+        if (data.summary) {
+          // Update the note with the summarized text
+          setNote(data.summary);
+          toast.success("Text summarized successfully.", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+        } else {
+          // Handle unexpected response format
+          toast.error("Unexpected response from the server.", {
+            position: "top-center",
+            autoClose: 2000,
+          });
+        }
       } else {
-        console.error('Failed to summarize text');
+        // Handle errors returned from the API
+        const errorData = await response.json();
+        toast.error(
+          errorData.message || "Failed to summarize text. Please try again.",
+          {
+            position: "top-center",
+            autoClose: 2000,
+          }
+        );
       }
     } catch (error) {
+      // Handle network or other unexpected errors
       console.error('Error summarizing text:', error);
+      toast.error("An error occurred while summarizing. Please try again later.", {
+        position: "top-center",
+        autoClose: 2000,
+      });
     }
   };
+  
 
   const startTranscription = () => {
     if (recognitionRef.current) {
+      toast.info("Recording in progress...", {
+        position: "top-center",
+        autoClose: 1500,
+      });
       recognitionRef.current.start();
       setIsRecording(true);
     }
@@ -270,6 +340,10 @@ const Editor = () => {
 
   const stopTranscription = () => {
     if (recognitionRef.current) {
+      toast.info("Recording Stopped!!!", {
+        position: "top-center",
+        autoClose: 1500,
+      });
       recognitionRef.current.stop();
       setIsRecording(false);
     }
@@ -305,9 +379,8 @@ const Editor = () => {
           </div>
         </div>
 
-        {/* Title and Category Inputs Side by Side */}
+        
         <div className="mb-4 flex space-x-4">
-  {/* Title Input */}
   <div className="flex-1 flex items-center space-x-2">
     <label className="text-black text-lg" htmlFor="title">
       Title:
@@ -322,8 +395,6 @@ const Editor = () => {
       required
     />
   </div>
-
-  {/* Category Input */}
   <div className="flex-1 flex items-center space-x-2">
     <label className="text-black text-lg" htmlFor="category">
       Category:
@@ -331,7 +402,7 @@ const Editor = () => {
     <div className="flex items-center space-x-2 w-full">
       <select
         id="category"
-        className="w-full p-[0.4rem] bg-white border text-black border-black rounded-md outline-none"
+        className="flex-grow p-[0.4rem] bg-white border text-black border-black rounded-md outline-none"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         required
@@ -344,12 +415,11 @@ const Editor = () => {
         ))}
       </select>
 
-      {/* Button to open modal for new category */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="bg-black hover:bg-gray-600 border border-black text-white p-[0.35rem] px-4 rounded-md"
+        className="bg-black hover:bg-gray-600 border border-black text-white p-[0.35rem] px-4 rounded-md flex-shrink-0"
       >
-        New
+        New Category
       </button>
     </div>
   </div>
@@ -357,7 +427,6 @@ const Editor = () => {
 
 
 
-        {/* Note Input */}
         <div className="mt-6 mb-4 relative">
         <textarea
           id="note"
@@ -365,23 +434,23 @@ const Editor = () => {
           value={note}
           onChange={(e) => setNote(e.target.value)}
           onPaste={(e) => {
-            e.preventDefault(); // Prevent the default paste behavior
-            const text = (e.clipboardData || window.clipboardData).getData('text'); // Extract plain text
-            document.execCommand('insertText', false, text); // Insert plain text into the textarea
+            e.preventDefault(); 
+            const text = (e.clipboardData || window.clipboardData).getData('text'); 
+            document.execCommand('insertText', false, text); 
           }}
           placeholder="Type or record your note here..."
           required
           style={{
             backgroundImage: `linear-gradient(to bottom, #d3d3d3 1px, transparent 1px)`,
-            backgroundSize: `100% 2rem`, // Spacing between lines
-            lineHeight: `2rem`, // Ensures text aligns with the lines
-            fontFamily: 'inherit', // Optional: Ensures consistent font styling
+            backgroundSize: `100% 2rem`, 
+            lineHeight: `2rem`, 
+            fontFamily: 'inherit', 
             paddingTop: '0.3rem',
           }}
         />
         <button
             onClick={isRecording ? stopTranscription : startTranscription}
-            className={`absolute bottom-3 right-1 p-2 rounded-full hover:bg-gray-600 ${
+            className={`absolute bottom-5 right-4 p-2 rounded-full hover:bg-gray-600 ${
               isRecording ? 'bg-black' : 'bg-black'
             }`}
           >
@@ -397,7 +466,7 @@ const Editor = () => {
             onClick={handleCheckGrammar}
             className="bg-black hover:bg-gray-600 border border-black text-white py-2 px-4 rounded mr-4"
           >
-            Fix Grammar
+            Fix Spelling and Grammar
           </button>
           <button
             onClick={handleSummarize}
@@ -415,7 +484,7 @@ const Editor = () => {
             onClick={handleSave}
             className="bg-black hover:bg-green-700 border border-black text-white py-2 px-4 rounded"
           >
-            {noteId ? 'Update' : 'Save'}
+            {noteId ? 'Update Note' : 'Save'}
           </button>
           <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
         </div>

@@ -280,18 +280,70 @@ def reset_new_password(request):
 def summarize_text(request):
     KEY = os.getenv('API_KEY')
     original_text = request.data.get('text')
+    if not original_text or not isinstance(original_text, str) or len(original_text.strip()) == 0:
+        return Response({'error': 'Input text is empty or invalid.'}, status=status.HTTP_400_BAD_REQUEST)
     genai.configure(api_key=KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(f"Act as a professional summarizer. Your task is to condense the following text while retaining key information and personal essence: {original_text}")
-    print(response.text)
-    return Response({'summary': response.text}, status=status.HTTP_200_OK)
+    analysis_response = model.generate_content(
+        f"Does the following text convey meaning, even if it contains grammar or spelling errors? Answer 'yes' or 'no': {original_text}"
+    )
+    if "no" in analysis_response.text.lower():
+        correction_check = model.generate_content(
+            f"Can the following text be corrected to make sense? Answer 'yes' or 'no': {original_text}"
+        )
+        if "no" in correction_check.text.lower():
+            return Response(
+                {'message': 'The provided text cannot be summarized meaningfully. Please provide coherent text.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    if " I " in original_text or original_text.lower().startswith("i "):
+        summary_prompt = (
+            f"Act as a professional summarizer. Retain the first-person perspective while condensing: {original_text}"
+        )
+    else:
+        summary_prompt = (
+            f"Act as a professional summarizer. Condense the following text while retaining its essence and correcting grammar and spelling: {original_text}"
+        )
+
+    response = model.generate_content(summary_prompt)
+    summary = response.text.strip()
+    if not summary or summary.lower() == original_text.lower() or len(summary) < 3:
+        return Response(
+            {'message': 'The summarization failed to produce meaningful output. Please provide valid and coherent text.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    return Response({'summary': summary}, status=status.HTTP_200_OK)
+
+
 
 @api_view(['POST'])
 def check_text(request):
     KEY = os.getenv('API_KEY')
-    original_text = request.data.get('text')
+    original_text = request.data.get('text') 
+    if not original_text or not isinstance(original_text, str) or len(original_text.strip()) == 0:
+        return Response({'error': 'Input text is empty or invalid.'}, status=status.HTTP_400_BAD_REQUEST)
     genai.configure(api_key=KEY)
     model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(f"Correct grammar and spelling: {original_text}")
-    print(response.text)
-    return Response({'correctedText': response.text}, status=status.HTTP_200_OK)  
+    sense_check_response = model.generate_content(f"Does this text make sense? Answer 'yes' or 'no': {original_text}")
+    if "no" in sense_check_response.text.lower():
+        grammar_check_response = model.generate_content(f"Can this text be corrected to make sense? Answer 'yes' or 'no': {original_text}")
+        if "no" in grammar_check_response.text.lower():
+            return Response(
+                {'message': 'The provided text is nonsensical or invalid. Please provide meaningful input.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    correctness_response = model.generate_content(f"Is this text grammatically and punctually correct? Answer 'yes' or 'no': {original_text}")
+    if "yes" in correctness_response.text.lower():
+        return Response(
+            {'message': 'No fix required!'},
+            status=status.HTTP_200_OK
+        )
+    correction_response = model.generate_content(f"Correct grammar, punctuation, and spelling: {original_text}")
+    corrected_text = correction_response.text.strip()
+    if not corrected_text.endswith("."):
+        corrected_text += "."
+
+    return Response(
+        {'correctedText': corrected_text},
+        status=status.HTTP_200_OK
+    )
