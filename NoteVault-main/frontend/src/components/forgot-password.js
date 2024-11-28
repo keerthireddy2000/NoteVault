@@ -59,7 +59,7 @@ const handleResetPassword = async (e) => {
           {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
           <form onSubmit={handleResetPassword}>
             <div className="mb-4 flex items-center">
-              <label className="text-white text-sm font-semibold w-1/3 mr-8">Enter your username</label>
+              <label className="text-white text-sm font-semibold w-1/3 mr-8">Username</label>
              <input
                 type="text"
                 value={username}

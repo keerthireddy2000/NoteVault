@@ -124,30 +124,34 @@ const Home = () => {
       const url = categoryId
         ? `http://localhost:8000/categories/update/${categoryId}/`
         : 'http://localhost:8000/categories/create/';
-
+  
       const method = categoryId ? 'PUT' : 'POST';
       const requestBody = JSON.stringify({ title: newCategoryTitle });
-
+  
       try {
         const response = await apiCallWithToken(url, {
           method,
           body: requestBody,
         });
+  
         if (response.ok) {
           const category = await response.json();
+
           if (categoryId) {
-            setCategories(categories.map((cat) => (cat._id === category._id ? category : cat)));
-            setCategoriesDict((prevDict) => ({ ...prevDict, [category._id]: category.title }));
+            setCategories((prevCategories) => 
+              prevCategories.map((cat) => (cat.id === category.id ? category : cat))
+            );
+            setCategoriesDict((prevDict) => ({ ...prevDict, [category.id]: category.title }));
           } else {
             setCategories((prevCategories) => [...prevCategories, category]);
-            setCategoriesDict((prevDict) => ({ ...prevDict, [category._id]: category.title }));
+            setCategoriesDict((prevDict) => ({ ...prevDict, [category.id]: category.title }));
           }
           setNewCategoryTitle('');
           setIsModalOpen(false);
           toast.success(categoryId ? 'Category updated successfully!' : 'Category created successfully');
         } else {
           console.error('Failed to save category');
-          toast.error(response.error ? response.error : "Error creating category");
+          toast.error(response.error || "Error creating category");
         }
       } catch (error) {
         console.error('Error saving category:', error);
@@ -155,6 +159,7 @@ const Home = () => {
       }
     }
   };
+  
 
   const handleDeleteCategory = async (categoryId) => {
     if (categoryId) {
@@ -373,14 +378,15 @@ const Home = () => {
 
               {/* Pin Icon */}
               <FaThumbtack
-                className={`absolute top-2 right-2 cursor-pointer ${
-                  note.pinned ? "text-black" : "text-gray-600"
-                }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  togglePin(note.id);
-                }}
-              />
+                  className="absolute top-2 right-2 cursor-pointer"
+                  style={{
+                    color: note.pinned ? '#d9b71e' : 'gray', // Golden yellow when pinned, gray when not
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePin(note.id); // Toggle the pin status
+                  }}
+                />
             </div>
           ))
         ) : (
