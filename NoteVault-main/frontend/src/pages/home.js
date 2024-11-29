@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa';
 import { apiCallWithToken } from '../api';
 import { toast , ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,11 +22,19 @@ const Home = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
   const [categoriesDict, setCategoriesDict] = useState([{}]);
+  const [loading, setLoading] = useState(false); 
 
   const categoriesToShow = 8;
 
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center min-h-screen">
+      <FaSpinner className="animate-spin text-black text-4xl" /> {/* FaSpinner as loading spinner */}
+    </div>
+  );
+
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoading(true);
       try {
         const categoriesResponse = await apiCallWithToken(
           "http://localhost:8000/categories/"
@@ -41,6 +49,8 @@ const Home = () => {
         );
       } catch (error) {
         console.error("Error fetching categories:", error);
+      }finally {
+        setLoading(false);
       }
     };
 
@@ -48,6 +58,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     const fetchNotes = async () => {
       try {
         let notesResponse;
@@ -65,6 +76,8 @@ const Home = () => {
         setNotes(sortedNotes);
       } catch (error) {
         console.error("Error fetching notes:", error);
+      }finally {
+        setLoading(false);
       }
     };
   
@@ -196,6 +209,7 @@ const Home = () => {
   };
 
   const handleNoteClick = (noteId) => {
+    setLoading(true);
     navigate(`/edit-note/${noteId}`);
   };
 
@@ -242,6 +256,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white text-white flex flex-col items-center p-4">
+      {loading && <LoadingSpinner />}
       <div className="flex flex-col w-full mb-8 space-y-4">
         <div className="flex items-center space-x-4 mb-4 w-2/3">
           <div className="flex items-center bg-white border border-black rounded-full px-4 py-2 flex-grow">

@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import { apiCallWithToken, logout } from '../api';
-import { FaTrashAlt,FaTimes } from 'react-icons/fa';  
+import { FaTrashAlt, FaTimes } from 'react-icons/fa';  
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MdRefresh } from "react-icons/md";
-import { FaMicrophone, FaStop } from 'react-icons/fa';
+import { FaMicrophone, FaStop, FaSpinner } from 'react-icons/fa';
 import { IoClose } from "react-icons/io5";
 
 
@@ -15,56 +15,70 @@ const Editor = () => {
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [note, setNote] = useState('');
-  const [newCategory, setNewCategory] = useState(''); // To create a new category
-  const [isModalOpen, setIsModalOpen] = useState(false); // Manage modal state
+  const [newCategory, setNewCategory] = useState(''); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef(null); // Reference for the speech recognition instance
+  const [fontSize, setFontSize] = useState(16); 
+  const [fontStyle, setFontStyle] = useState('normal'); 
+  const recognitionRef = useRef(null);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); 
+  
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center min-h-screen">
+      <FaSpinner className="animate-spin text-black text-4xl" />
+    </div>
+  );
+
+
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window) {
-      const recognition = new window.webkitSpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-  
-      let interimTranscript = '';
-  
-      recognition.onresult = (event) => {
-        let finalTranscript = '';
-        interimTranscript = '';
-  
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript.trim();
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript + ' ';
+    setLoading(true);
+    try{
+      if ('webkitSpeechRecognition' in window) {
+        const recognition = new window.webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+    
+        let interimTranscript = '';
+    
+        recognition.onresult = (event) => {
+          let finalTranscript = '';
+          interimTranscript = '';
+    
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript.trim();
+            if (event.results[i].isFinal) {
+              finalTranscript += transcript + ' ';
+            } else {
+              interimTranscript += transcript + ' ';
+            }
           }
-        }
-  
-        // Update the note only with the final transcript
-        setNote((prevNote) => prevNote.trim() + ' ' + finalTranscript.trim());
-      };
-  
-      recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        toast.error('Speech recognition error occurred.');
-        setIsRecording(false);
-      };
-  
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-  
-      recognitionRef.current = recognition;
-    } else {
-      console.error('Web Speech API not supported in this browser.');
-      toast.error('Speech recognition not supported in this browser.');
+          setNote((prevNote) => prevNote.trim() + ' ' + finalTranscript.trim());
+        };
+    
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          toast.error('Speech recognition error occurred.');
+          setIsRecording(false);
+        };
+    
+        recognition.onend = () => {
+          setIsRecording(false);
+        };
+    
+        recognitionRef.current = recognition;
+      } else {
+        console.error('Web Speech API not supported in this browser.');
+        toast.error('Speech recognition not supported in this browser.');
+      }
+    }finally {
+      setLoading(false);
     }
   }, []);
-  
-  // Fetch categories on component mount
+
   useEffect(() => {
+    setLoading(true);
     const fetchCategories = async () => {
       try {
         const response = await apiCallWithToken('http://localhost:8000/categories', { method: 'GET' });
@@ -77,26 +91,34 @@ const Editor = () => {
         }
       } catch (error) {
         console.error('Error fetching categories:', error);
+      }finally {
+        setLoading(false);
       }
     };
     fetchCategories();
   }, []);
-  
+
   useEffect(() => {
     if (noteId) {
+      setLoading(true);
       const fetchNote = async () => {
         try {
           const response = await apiCallWithToken(`http://localhost:8000/notes/${noteId}`, { method: 'GET' });
           if (response.ok) {
             const data = await response.json();
+            console.log("data", data);
             setTitle(data.title);
             setCategory(data.category);
             setNote(data.content);
+            setFontSize(data.font_size || 16);
+            setFontStyle(data.font_style || 'normal');
           } else {
             console.error('Failed to fetch note');
           }
         } catch (error) {
           console.error('Error fetching note:', error);
+        }finally {
+          setLoading(false);
         }
       };
       fetchNote();
@@ -125,8 +147,6 @@ const Editor = () => {
   };
 
   const handleReset = () => {
-    // setTitle('');
-    // setCategory('');
     setNote('');
   };
 
@@ -182,10 +202,11 @@ const Editor = () => {
     }
 
     try {
+      console.log("font size", fontStyle);
       const response = await apiCallWithToken(noteId ? `http://localhost:8000/notes/update/${noteId}/` 
                                                       : 'http://localhost:8000/notes/create/', {
         method: noteId ? 'PUT' : 'POST',
-        body: JSON.stringify({ title, category, content: note }),
+        body: JSON.stringify({ title, category, content: note, font_size: parseInt(fontSize), font_style: fontStyle, font_style: fontStyle }),  // Pass font style in the request
       });
 
       if (response.ok) {
@@ -239,7 +260,6 @@ const Editor = () => {
     }
   };
 
-  // Function to summarize the text
   const handleSummarize = async () => {
     try {
       const response = await apiCallWithToken('http://localhost:8000/summarize/', {
@@ -248,7 +268,7 @@ const Editor = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setNote(data.summary); // Update the note with the summary
+        setNote(data.summary);
         toast.success("Text summarized successfully.", {
           position: "top-center",
           autoClose: 2000,
@@ -277,6 +297,7 @@ const Editor = () => {
 
   return (
     <div className="min-h-screen bg-white text-white flex flex-col items-center p-4">
+      {loading && <LoadingSpinner />}
       <div className="w-full bg-white pt-2 pb-2">
         <div className="mb-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-black">{noteId ? 'Edit Note' : 'Create Note'}</h2>
@@ -296,90 +317,124 @@ const Editor = () => {
               <MdRefresh  className="text-2xl" />
             </button>
             <button
-            onClick={() => navigate('/')}
-            className="bg-white hover:text-gray-600 text-black py-2 px-4 rounded"
-          >
-            <FaTimes className="text-2xl" />
-          </button>
-
+              onClick={() => navigate('/')}
+              className="bg-white hover:text-gray-600 text-black py-2 px-4 rounded"
+            >
+              <FaTimes className="text-2xl" />
+            </button>
           </div>
         </div>
 
-        {/* Title and Category Inputs Side by Side */}
         <div className="mb-4 flex space-x-4">
-  {/* Title Input */}
-  <div className="flex-1 flex items-center space-x-2">
-    <label className="text-black text-lg" htmlFor="title">
-      Title:
-    </label>
-    <input
-      type="text"
-      id="title"
-      className="w-full p-1 bg-white border text-black border-black rounded outline-none"
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-      placeholder="Enter note title"
-      required
-    />
-  </div>
+          <div className="flex-1 flex items-center space-x-2">
+            <label className="text-black text-lg" htmlFor="title">
+              Title:
+            </label>
+            <input
+              type="text"
+              id="title"
+              className="w-full p-1 bg-white border text-black border-black rounded outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter note title"
+              required
+            />
+          </div>
 
-  {/* Category Input */}
-  <div className="flex-1 flex items-center space-x-2">
-    <label className="text-black text-lg" htmlFor="category">
-      Category:
-    </label>
-    <div className="flex items-center space-x-2 w-full">
-      <select
-        id="category"
-        className="w-full p-[0.4rem] bg-white border text-black border-black rounded-md outline-none"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        required
-      >
-        <option value="">Select a category</option>
-        {categories.map((cat) => (
-          <option key={cat.id} value={cat.id}>
-            {cat.title}
-          </option>
-        ))}
-      </select>
+          <div className="flex-1 flex items-center space-x-2">
+            <label className="text-black text-lg" htmlFor="category">
+              Category:
+            </label>
+            <div className="flex items-center space-x-2 w-full">
+              <select
+                id="category"
+                className="w-full p-[0.4rem] bg-white border text-black border-black rounded-md outline-none"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+              >
+                <option value="">Select a category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.title}
+                  </option>
+                ))}
+              </select>
 
-      {/* Button to open modal for new category */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-black hover:bg-gray-600 border border-black text-white p-[0.35rem] px-4 rounded-md"
-      >
-        New
-      </button>
-    </div>
-  </div>
-</div>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-black hover:bg-gray-600 border border-black text-white p-[0.35rem] px-4 rounded-md"
+              >
+                New
+              </button>
+            </div>
+          </div>
+        </div>
 
+        <div className="mb-4 flex gap-3">
+          <label className="text-black text-lg mt-1" htmlFor="font-size">
+            Font Size:
+          </label>
+          <select
+            id="font-size"
+            className="w-[80px] p-2 border border-black rounded-md text-black"
+            value={fontSize}
+            onChange={(e) => setFontSize(e.target.value)}
+          >
+            <option value="12">12px</option>
+            <option value="14">14px</option>
+            <option value="16">16px</option>
+            <option value="18">18px</option>
+            <option value="20">20px</option>
+            <option value="22">22px</option>
+            <option value="24">24px</option>
+          </select>
+          <div className= "ml-3">
+          <label className="text-black text-lg mt-1 mr-3" htmlFor="font-style">
+            Font Style:
+          </label>
+          <select
+            id="font-style"
+            className="w-[200px] p-2 border border-black rounded-md text-black "
+            value={fontStyle}
+            onChange={(e) => setFontStyle(e.target.value)}
+          >
+            <option value="normal">Normal</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Calibri">Calibri</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Tahoma">Tahoma</option>
+            <option value="Impact">Impact</option>
+            <option value="cursive">Cursive</option>
+          </select>
+          </div>
+        </div>
 
-
-        {/* Note Input */}
         <div className="mt-6 mb-4 relative">
-        <textarea
-          id="note"
-          className="w-full px-2 bg-white text-black border border-black rounded-md h-96 outline-none"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          onPaste={(e) => {
-            e.preventDefault(); // Prevent the default paste behavior
-            const text = (e.clipboardData || window.clipboardData).getData('text'); // Extract plain text
-            document.execCommand('insertText', false, text); // Insert plain text into the textarea
-          }}
-          placeholder="Type or record your note here..."
-          required
-          style={{
-            backgroundImage: `linear-gradient(to bottom, #d3d3d3 1px, transparent 1px)`,
-            backgroundSize: `100% 2rem`, // Spacing between lines
-            lineHeight: `2rem`, // Ensures text aligns with the lines
-            fontFamily: 'inherit', // Optional: Ensures consistent font styling
-            paddingTop: '0.3rem',
-          }}
-        />
-        <button
+          <textarea
+            id="note"
+            className="w-full px-2 bg-white text-black border border-black rounded-md h-96 outline-none"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Type or record your note here..."
+            required
+            style={{
+              backgroundImage: `linear-gradient(to bottom, #d3d3d3 1px, transparent 1px)`,
+              backgroundSize: `100% 2rem`, 
+              lineHeight: `2rem`, 
+              fontFamily: fontStyle === 'normal' ? 'Arial, sans-serif' :
+                          fontStyle === 'Times New Roman' ? '"Times New Roman", Times, serif' :
+                          fontStyle === 'Calibri' ? '"Calibri", sans-serif' :
+                          fontStyle === 'Georgia' ? 'Georgia, serif' :
+                          fontStyle === 'Tahoma' ? 'Tahoma, Geneva, sans-serif' :
+                          fontStyle === 'Impact' ? 'Impact, Charcoal, sans-serif' :
+                          fontStyle === 'cursive' ? 'cursive' :
+                          'Arial, sans-serif',
+              fontSize: `${fontSize}px`,
+              paddingTop: '0.3rem',
+            }}
+          />
+          <button
             onClick={isRecording ? stopTranscription : startTranscription}
             className={`absolute bottom-3 right-1 p-2 rounded-full hover:bg-gray-600 ${
               isRecording ? 'bg-black' : 'bg-black'
@@ -387,11 +442,8 @@ const Editor = () => {
           >
             {isRecording ? <FaStop className="text-white text-xl" /> : <FaMicrophone className="text-white text-xl" />}
           </button>
-      </div>
+        </div>
 
-
-
-        {/* Action Buttons */}
         <div className="flex justify-end">
           <button
             onClick={handleCheckGrammar}
@@ -405,12 +457,6 @@ const Editor = () => {
           >
             Summarize with AI
           </button>
-          {/* <button
-            onClick={handleReset}
-            className="ml-4 bg-black hover:bg-gray-600 border border-black text-white py-2 px-4 rounded"
-          >
-            Reset
-          </button> */}
           <button
             onClick={handleSave}
             className="bg-black hover:bg-green-700 border border-black text-white py-2 px-4 rounded"
@@ -423,13 +469,13 @@ const Editor = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
           <div className="bg-white p-6 rounded-md w-1/3">
-          <button
-            onClick={() => setIsModalOpen(false)}
-            className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
-            aria-label="Close"
-          >
-          <IoClose />
-          </button>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
+              aria-label="Close"
+            >
+              <IoClose />
+            </button>
             <h3 className="text-2xl mb-4 text-black">Create New Category</h3>
             <input
               type="text"
@@ -440,13 +486,13 @@ const Editor = () => {
             />
             <div className="flex justify-end space-x-4">
               <button
-                onClick={() => setIsModalOpen(false)} // Close modal
+                onClick={() => setIsModalOpen(false)}
                 className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
               >
                 Cancel
               </button>
               <button
-                onClick={handleNewCategory} // Save new category
+                onClick={handleNewCategory} 
                 className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
               >
                 Save

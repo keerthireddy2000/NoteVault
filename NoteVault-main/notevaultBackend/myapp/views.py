@@ -128,6 +128,8 @@ def create_note(request):
     content = request.data.get('content')
     category_id = request.data.get('category')
     pinned = request.data.get('pinned', False)
+    font_size = request.data.get('font_size')
+    font_style = request.data.get('font_style')
 
     if not title or not content or not category_id:
         return Response({'error': 'All fields are required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -142,7 +144,9 @@ def create_note(request):
         content=content,
         category=category,
         user=request.user,
-        pinned=bool(pinned)
+        pinned=bool(pinned),
+        font_size=font_size,
+        font_style=font_style
     )
     serializer = NoteSerializer(note)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -195,6 +199,7 @@ def get_note(request, note_id):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_note(request, note_id):
+    print("data", request.data)
     try:
         note = Note.objects.get(id=note_id, user=request.user)
     except Note.DoesNotExist:
@@ -202,6 +207,7 @@ def update_note(request, note_id):
     serializer = NoteSerializer(note, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
+        print("updated", serializer.data)
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
