@@ -1,9 +1,8 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight, FaSpinner } from 'react-icons/fa';
+import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight, FaSpinner, FaCopy } from 'react-icons/fa';
 import { apiCallWithToken } from '../api';
-import { toast , ToastContainer} from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoClose } from "react-icons/io5";
 
@@ -22,13 +21,13 @@ const Home = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
   const [categoriesDict, setCategoriesDict] = useState([{}]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const categoriesToShow = 8;
 
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center min-h-screen">
-      <FaSpinner className="animate-spin text-black text-4xl" /> {/* FaSpinner as loading spinner */}
+      <FaSpinner className="animate-spin text-black text-4xl" />
     </div>
   );
 
@@ -49,7 +48,7 @@ const Home = () => {
         );
       } catch (error) {
         console.error("Error fetching categories:", error);
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -76,11 +75,11 @@ const Home = () => {
         setNotes(sortedNotes);
       } catch (error) {
         console.error("Error fetching notes:", error);
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
-  
+
     fetchNotes();
   }, [selectedCategoryId]);
 
@@ -95,18 +94,18 @@ const Home = () => {
 
   const togglePin = async (noteId) => {
     const updatedNotes = notes.map((note) =>
-    note.id === noteId ? { ...note, pinned: !note.pinned } : note
-  );
-  const pinnedNotes = updatedNotes.filter(note => note.pinned);
-  const unpinnedNotes = updatedNotes.filter(note => !note.pinned);
+      note.id === noteId ? { ...note, pinned: !note.pinned } : note
+    );
+    const pinnedNotes = updatedNotes.filter(note => note.pinned);
+    const unpinnedNotes = updatedNotes.filter(note => !note.pinned);
 
-  const sortedPinnedNotes = pinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
-  const sortedUnpinnedNotes = unpinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+    const sortedPinnedNotes = pinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+    const sortedUnpinnedNotes = unpinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
 
-  const sortedNotes = [...sortedPinnedNotes, ...sortedUnpinnedNotes];
+    const sortedNotes = [...sortedPinnedNotes, ...sortedUnpinnedNotes];
 
-  setNotes(sortedNotes);
-  
+    setNotes(sortedNotes);
+
     try {
       const response = await fetch(`http://localhost:8000/notes/toggle-pin/${noteId}/`, {
         method: 'POST',
@@ -115,7 +114,7 @@ const Home = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to toggle pin status on the server');
       }
@@ -129,7 +128,45 @@ const Home = () => {
       setNotes(revertedNotes);
     }
   };
-  
+
+  const handleCopyNote = async (noteId) => {
+    const noteToCopy = notes.find(note => note.id === noteId);
+    if (!noteToCopy) return;
+
+    const newNote = { ...noteToCopy, id: undefined, title: `${noteToCopy.title} - Copy` }; // Create a new note with a modified title
+
+    try {
+      const response = await fetch('http://localhost:8000/notes/create/', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newNote),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to copy note');
+      }
+
+      const createdNote = await response.json();
+      setNotes((prevNotes) => {
+        const updatedNotes = [...prevNotes, createdNote];
+        const pinnedNotes = updatedNotes.filter(note => note.pinned);
+        const unpinnedNotes = updatedNotes.filter(note => !note.pinned);
+
+        const sortedPinnedNotes = pinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+        const sortedUnpinnedNotes = unpinnedNotes.sort((a, b) => a.title.localeCompare(b.title));
+
+        return [...sortedPinnedNotes, ...sortedUnpinnedNotes];
+      });
+
+      toast.success('Note copied successfully!');
+    } catch (error) {
+      console.error('Error copying note:', error);
+      toast.error('Failed to copy note');
+    }
+  };
 
   const handleSaveCategory = async (categoryId) => {
     if (newCategoryTitle.trim()) {
@@ -137,16 +174,16 @@ const Home = () => {
       const url = categoryId
         ? `http://localhost:8000/categories/update/${categoryId}/`
         : 'http://localhost:8000/categories/create/';
-  
+
       const method = categoryId ? 'PUT' : 'POST';
       const requestBody = JSON.stringify({ title: newCategoryTitle });
-  
+
       try {
         const response = await apiCallWithToken(url, {
           method,
           body: requestBody,
         });
-  
+
         if (response.ok) {
           const category = await response.json();
 
@@ -172,7 +209,6 @@ const Home = () => {
       }
     }
   };
-  
 
   const handleDeleteCategory = async (categoryId) => {
     if (categoryId) {
@@ -292,59 +328,58 @@ const Home = () => {
             )
             .map((category) => (
               <div key={category.id} className="relative group flex w-[150px]">
-              <button
-                onClick={() =>
-                  setSelectedCategoryId(category.id ? category.id : "all")
-                }
-                className={`flex items-center justify-between p-2 px-4 rounded-full w-full ${
-                  selectedCategoryId === category.id ||
-                  (category.id === undefined && selectedCategoryId === "all")
-                    ? "bg-black text-white p-[0.6rem]"
-                    : "bg-white border border-black"
-                }`}
-              >
-                <span className="truncate max-w-[100px]">{category.title}</span>
-                {category.id && category.id !== "all" && (
-                  <div className="ml-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDropdownToggle(category.id);
-                      }}
-                      className="text-black text-xl p-0 bg-gray-200 rounded-full w-4"
-                    >
-                      &#8942;
-                    </button>
+                <button
+                  onClick={() =>
+                    setSelectedCategoryId(category.id ? category.id : "all")
+                  }
+                  className={`flex items-center justify-between p-2 px-4 rounded-full w-full ${
+                    selectedCategoryId === category.id ||
+                    (category.id === undefined && selectedCategoryId === "all")
+                      ? "bg-black text-white p-[0.6rem]"
+                      : "bg-white border border-black"
+                  }`}
+                >
+                  <span className="truncate max-w-[100px]">{category.title}</span>
+                  {category.id && category.id !== "all" && (
+                    <div className="ml-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDropdownToggle(category.id);
+                        }}
+                        className="text-black text-xl p-0 bg-gray-200 rounded-full w-4"
+                      >
+                        &#8942;
+                      </button>
+                    </div>
+                  )}
+                </button>
+                {openDropdown === category.id && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute top-8 right-6 mt-0 bg-white border rounded-md shadow-lg w-28 z-10"
+                  >
+                    <ul className="space-y-1">
+                      <li>
+                        <button
+                          onClick={() => openEditModal(category.id, category.title)}
+                          className="block py-2 px-10 text-black hover:bg-gray-600"
+                        >
+                          Edit
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          onClick={() => openDeleteModal(category)}
+                          className="block py-2 px-8 text-black hover:bg-gray-600 rounded-sm"
+                        >
+                          Delete
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                 )}
-              </button>
-              {openDropdown === category.id && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute top-8 right-6 mt-0 bg-white border rounded-md shadow-lg w-28 z-10"
-                >
-                  <ul className="space-y-1">
-                    <li>
-                      <button
-                        onClick={() => openEditModal(category.id, category.title)}
-                        className="block py-2 px-10 text-black hover:bg-gray-600"
-                      >
-                        Edit
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => openDeleteModal(category)}
-                        className="block py-2 px-8 text-black hover:bg-gray-600 rounded-sm"
-                      >
-                        Delete
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
-
+              </div>
             ))}
 
           {visibleCategoryStartIndex + categoriesToShow < categories.length && (
@@ -390,6 +425,14 @@ const Home = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     togglePin(note.id);
+                  }}
+                />
+
+                <FaCopy
+                  className="absolute top-2 right-9 cursor-pointer text-gray-800"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyNote(note.id);
                   }}
                 />
               </div>
@@ -483,3 +526,4 @@ const Home = () => {
 };
 
 export default Home;
+
