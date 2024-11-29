@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight, FaSpinner, FaCopy } from 'react-icons/fa';
+import { FaSearch, FaPlusCircle, FaThumbtack, FaArrowLeft, FaArrowRight, FaSpinner, FaCopy, FaDownload } from 'react-icons/fa';
 import { apiCallWithToken } from '../api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { IoClose } from "react-icons/io5";
+import { saveAs } from 'file-saver';
+import { Document, Packer, Paragraph, TextRun } from 'docx';
 
 const Home = () => {
   const [notes, setNotes] = useState([]);
@@ -290,6 +292,48 @@ const Home = () => {
   }
   const dropdownRef = useRef(null);
 
+  const handleDownload = (note) => {
+    const noteLines = note.content.split('\n'); 
+    const paragraphs = noteLines.map(line => 
+      new Paragraph({
+        children: [
+          new TextRun({
+            text: line,
+            font: note.font_style,
+            size: (note.font_size) * 2,
+          }),
+        ],
+      })
+    );
+    const titleParagraph = new Paragraph({
+      children: [
+        new TextRun({
+          text: note.title,
+          bold: true,
+          font: note.font_style,
+          size: (note.font_size) * 2,
+        }),
+      ],
+    });
+    const lineBreak = new Paragraph({});
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            titleParagraph, 
+            lineBreak,  
+            lineBreak,    
+            ...paragraphs,
+          ],
+        },
+      ],
+    });
+    Packer.toBlob(doc).then((blob) => {
+      saveAs(blob, `${note.title || 'note'}.docx`);
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white text-white flex flex-col items-center p-4">
       {loading && <LoadingSpinner />}
@@ -347,7 +391,7 @@ const Home = () => {
                           e.stopPropagation();
                           handleDropdownToggle(category.id);
                         }}
-                        className="text-black text-xl p-0 bg-gray-200 rounded-full w-4"
+                        className="text-black text-xl p-0 bg-gray-200 rounded-full w-4 hover:bg-gray-600 hover:text-white"
                       >
                         &#8942;
                       </button>
@@ -419,6 +463,7 @@ const Home = () => {
 
                 <FaThumbtack
                   className="absolute top-2 right-2 cursor-pointer"
+                  title = {note.pinned ? "Unpin" : "Pin"}
                   style={{
                     color: note.pinned ? '#d9b71e' : 'gray',
                   }}
@@ -427,14 +472,22 @@ const Home = () => {
                     togglePin(note.id);
                   }}
                 />
-
                 <FaCopy
-                  className="absolute top-2 right-9 cursor-pointer text-gray-800"
+                  className="absolute top-2 right-9 cursor-pointer hover:text-black text-gray-400"
+                  title="Make a copy"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCopyNote(note.id);
                   }}
                 />
+                <button
+                  onClick={(e) =>  {e.stopPropagation();
+                    handleDownload(note)}}
+                  className="absolute top-2 right-16 hover:text-black text-gray-400 cursor-pointer"
+                  title="Download as word"
+                >
+                  <FaDownload />
+                </button>
               </div>
           ))
         ) : (

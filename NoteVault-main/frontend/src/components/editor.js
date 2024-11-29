@@ -382,20 +382,23 @@ const Editor = () => {
             {noteId && (
               <button
                 onClick={handleDelete}
-                className="bg-white hover:text-gray-600 text-black py-2 px-4 rounded"
+                className=" text-gray-600 hover:text-black py-2 px-4 rounded"
+                title='Delete'
               >
                 <FaTrashAlt className="text-2xl" /> 
               </button>
             )}
             <button
               onClick={handleReset}
-              className="bg-white hover:text-gray-600 text-black py-2 px-4 rounded font-extrabold"
+              className=" text-gray-600 hover:text-black py-2 px-4 rounded font-extrabold"
+              title='Reset'
             >
               <MdRefresh  className="text-2xl" />
             </button>
             <button
               onClick={() => navigate('/')}
-              className="bg-white hover:text-gray-600 text-black py-2 px-4 rounded"
+              className=" text-gray-600 hover:text-black py-2 px-4 rounded"
+              title='Close'
             >
               <FaTimes className="text-2xl" />
             </button>
