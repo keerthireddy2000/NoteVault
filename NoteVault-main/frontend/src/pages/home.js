@@ -369,27 +369,30 @@ const Home = () => {
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note) => (
             <div
-              key={note._id}
-              className="bg-gray-100 p-4 rounded-md border border-gray-400 shadow-lg relative cursor-pointer h-32"
-              onClick={() => handleNoteClick(note.id)}
-            >
-              <h3 className="text-xl font-bold text-black">{note.title}</h3>
-              <p className="text-gray-700 truncate">{note.content}</p>
-              <span className="text-sm text-gray-700">
-                #{categoriesDict[note.category]}
-              </span>
+                key={note._id}
+                className="bg-gray-100 p-4 rounded-md border border-gray-400 shadow-lg relative cursor-pointer h-[200px]"
+                onClick={() => handleNoteClick(note.id)}
+              >
+                <h3 className="text-xl font-bold text-black mb-2">{note.title}</h3>
+                <p className="text-gray-700 truncate">{note.content}</p>
 
-              <FaThumbtack
+                <span
+                  className="text-sm text-black absolute bottom-4 left-4"
+                >
+                  #{categoriesDict[note.category]}
+                </span>
+
+                <FaThumbtack
                   className="absolute top-2 right-2 cursor-pointer"
                   style={{
                     color: note.pinned ? '#d9b71e' : 'gray',
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    togglePin(note.id); 
+                    togglePin(note.id);
                   }}
                 />
-            </div>
+              </div>
           ))
         ) : (
           <p className="text-black text-lg">
