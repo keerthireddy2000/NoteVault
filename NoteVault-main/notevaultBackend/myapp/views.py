@@ -11,8 +11,23 @@ from rest_framework import status
 from django.contrib.auth.hashers import check_password
 import google.generativeai as genai
 import os
+from datetime import datetime
+from django.http import HttpResponse
+from django.conf import settings
 
 
+
+def index(request):
+    now = datetime.now()
+    html = f'''
+    <html>
+        <body>
+            <h1>Hello from Vercel!</h1>
+            <p>The current time is { now }.</p>
+        </body>
+    </html>
+    '''
+    return HttpResponse(html)
 
 @api_view(['POST'])
 def register(request):
@@ -294,7 +309,7 @@ def reset_new_password(request):
 
 @api_view(['POST'])
 def summarize_text(request):
-    KEY = os.getenv('API_KEY')
+    KEY = settings.KEY
     original_text = request.data.get('text')
     if not original_text or not isinstance(original_text, str) or len(original_text.strip()) == 0:
         return Response({'error': 'Input text is empty or invalid.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -334,7 +349,7 @@ def summarize_text(request):
 
 @api_view(['POST'])
 def check_text(request):
-    KEY = os.getenv('API_KEY')
+    KEY = settings.KEY
     original_text = request.data.get('text') 
     if not original_text or not isinstance(original_text, str) or len(original_text.strip()) == 0:
         return Response({'error': 'Input text is empty or invalid.'}, status=status.HTTP_400_BAD_REQUEST)

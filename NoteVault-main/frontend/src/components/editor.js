@@ -539,7 +539,7 @@ const Editor = () => {
           </button>
           <button
             onClick={handleSave}
-            className="bg-black hover:bg-green-700 border border-black text-white py-2 px-4 rounded"
+            className="bg-black hover:bg-gray-700 border border-black text-white py-2 px-4 rounded"
           >
             {noteId ? 'Update Note' : 'Save'}
           </button>
