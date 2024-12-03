@@ -514,14 +514,14 @@ const Editor = () => {
               paddingTop: '0.3rem',
             }}
           />
-          <button
+          {/* <button
             onClick={isRecording ? stopTranscription : startTranscription}
             className={`absolute bottom-5 right-4 p-2 rounded-full hover:bg-gray-600 ${
               isRecording ? 'bg-black' : 'bg-black'
             }`}
           >
             {isRecording ? <FaStop className="text-white text-xl" /> : <FaMicrophone className="text-white text-xl" />}
-          </button>
+          </button> */}
         </div>
 
         <div className="flex justify-end">
