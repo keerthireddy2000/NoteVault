@@ -13,7 +13,7 @@ import ForgotPassword from './components/forgot-password';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access'));
 
-  // Custom component to determine when to show the Header
+  
   const ConditionalHeader = () => {
     const location = useLocation();
     const hideHeaderPaths = ['/','/login', '/signup', '/forgot-password'];
@@ -25,7 +25,6 @@ function App() {
   return (
     <div>
       <Router>
-        {/* Render the header conditionally */}
         <ConditionalHeader />
         <Routes>
           <Route path="/" element={<Login />} />
