@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'NoteVault',
         'CLIENT': {
             'host': os.getenv('DATABASE_URL'),
-            'ssl': True,  # Enable SSL if needed
+            'ssl': True,  
         }
     }
 }
@@ -96,7 +96,7 @@ DATABASES = {
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React app URL
+    "http://localhost:3000",  
 ]
 
 # Password validation

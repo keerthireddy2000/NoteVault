@@ -296,13 +296,13 @@ const Editor = () => {
   
   const handleSummarize = async () => {
     try {
-      // Show a loading notification to indicate the process has started
+      
       toast.info("Summarizing text...", {
         position: "top-center",
         autoClose: 1500,
       });
   
-      // Make the API call
+      
       const response = await apiCallWithToken('http://localhost:8000/summarize/', {
         method: 'POST',
         headers: {
@@ -311,25 +311,25 @@ const Editor = () => {
         body: JSON.stringify({ text: note }),
       });
   
-      // Handle the response
+      
       if (response.ok) {
         const data = await response.json();
         if (data.summary) {
-          // Update the note with the summarized text
+          
           setNote(data.summary);
           toast.success("Text summarized successfully.", {
             position: "top-center",
             autoClose: 2000,
           });
         } else {
-          // Handle unexpected response format
+          
           toast.error("Unexpected response from the server.", {
             position: "top-center",
             autoClose: 2000,
           });
         }
       } else {
-        // Handle errors returned from the API
+        
         const errorData = await response.json();
         toast.error(
           errorData.message || "Failed to summarize text. Please try again.",
@@ -340,7 +340,7 @@ const Editor = () => {
         );
       }
     } catch (error) {
-      // Handle network or other unexpected errors
+      
       console.error('Error summarizing text:', error);
       toast.error("An error occurred while summarizing. Please try again later.", {
         position: "top-center",
