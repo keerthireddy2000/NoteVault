@@ -142,7 +142,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-black">
       <div className="flex items-center justify-center mb-10 pt-[60px]">
-        <img src="/logo.jpeg" alt="Logo" className="w-40 h-28 mr-4 -ml-16" />
+        <img src="https://notevaultkeerthi.s3.us-east-1.amazonaws.com/Logo.jpeg" alt="Logo" className="w-40 h-28 mr-4 -ml-16" />
         <div>
           <h1 className="text-5xl text-white font-bold text-center mb-3">NOTE VAULT</h1>
           <h3 className="text-white text-xl font-semibold">Secure your thoughts, unlock your potential</h3>

@@ -94,7 +94,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-black flex flex-col md:flex-row gap-0 items-center ">
       <div className="flex flex-col items-center w-full md:w-1/2 mb-4 md:ml-20 ">
-        <img src="/logo.jpeg" alt="Logo" className="w-40 h-28 mb-4 "/>
+        <img src="https://notevaultkeerthi.s3.us-east-1.amazonaws.com/Logo.jpeg" alt="Logo" className="w-40 h-28 mb-4 "/>
         <h1 className="text-3xl md:text-5xl text-white font-bold mb-3 text-center">NOTE VAULT</h1>
         <h3 className="text-white text-lg md:text-xl font-semibold text-center">
           Secure your thoughts, unlock your potential

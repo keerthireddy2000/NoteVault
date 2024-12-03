@@ -46,7 +46,7 @@ const Header = () => {
             navigate("/");
           }}
         >
-          <img src="/logo.jpeg" alt="Logo" className="w-16 h-10" />
+          <img src="https://notevaultkeerthi.s3.us-east-1.amazonaws.com/Logo.jpeg" alt="Logo" className="w-16 h-10" />
           <h1 className="text-2xl font-semibold cursor-pointer">NoteVault</h1>
         </div>
 
