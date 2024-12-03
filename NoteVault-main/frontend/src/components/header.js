@@ -3,21 +3,26 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 
 const Header = () => {
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
   );
+  const [firstName, setFirstName] = useState(
+    localStorage.getItem("firstName") || "");
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("username");
+    localStorage.removeItem("firstName")
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUsername("");
@@ -46,7 +51,7 @@ const Header = () => {
         </div>
 
         <div className="flex items-center space-x-4">
-          <p className="text-lg">Hello, {username}</p>
+          <p className="text-lg">Hello, {firstName }</p>
           <button
             onClick={toggleSidebar}
             className="text-2xl focus:outline-none"

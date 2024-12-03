@@ -24,4 +24,5 @@ urlpatterns = [
     path('reset-new-password/', views.reset_new_password, name='reset_new_password'),
     path('summarize/', views.summarize_text, name='summarize'),
     path('check_grammar/', views.check_text, name='check_grammar'),
+    path('api/getFirstname/', views.get_firstname, name='get_firstname'),
 ]

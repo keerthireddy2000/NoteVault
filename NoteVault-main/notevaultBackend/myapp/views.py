@@ -378,3 +378,15 @@ def check_text(request):
         {'correctedText': corrected_text},
         status=status.HTTP_200_OK
     )
+
+@api_view(['GET'])
+def get_firstname(request):
+    if request.user.is_authenticated:
+        username = request.query_params.get('username', request.user.username)
+        try:
+            user = User.objects.get(username=username)
+            return Response({"first_name": user.first_name})
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+    else:
+        return Response({"error": "Authentication required"}, status=401)

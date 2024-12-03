@@ -67,6 +67,19 @@ const Login = () => {
         localStorage.setItem('username', username);
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh', data.refresh);
+
+        const firstNameResponse = await fetch(`http://localhost:8000/api/getFirstname/?username=${username}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${data.access}`,
+          },
+        });
+  
+        const firstNameData = await firstNameResponse.json();
+        if (firstNameData.first_name) {
+          localStorage.setItem('firstName', firstNameData.first_name);
+        }
+        
         navigate('/home');
       } else {
         const result = await response.json();

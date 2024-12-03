@@ -126,6 +126,7 @@ const Signup = () => {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem('username', username);
+        localStorage.setItem('firstName', firstName);
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh', data.refresh);
         toast.success('Signup successful! Redirecting...');
