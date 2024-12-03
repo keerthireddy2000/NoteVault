@@ -31,7 +31,7 @@ export const apiCallWithToken = async (url, options = {}) => {
   
   
   export const refreshAccessToken = async (refreshToken) => {
-    const response = await fetch('http://3.89.180.67:8000/refresh/', {
+    const response = await fetch('http://52.7.128.221:8000/refresh/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refresh: refreshToken }),

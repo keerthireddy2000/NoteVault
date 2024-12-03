@@ -54,7 +54,7 @@ const Login = () => {
       return;
     }
     try {
-      const response = await fetch('http://3.89.180.67:8000/login/', {
+      const response = await fetch('http://52.7.128.221:8000/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ const Login = () => {
         localStorage.setItem('token', data.access);
         localStorage.setItem('refresh', data.refresh);
 
-        const firstNameResponse = await fetch(`http://3.89.180.67:8000/api/getFirstname/?username=${username}`, {
+        const firstNameResponse = await fetch(`http://52.7.128.221:8000/api/getFirstname/?username=${username}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${data.access}`,

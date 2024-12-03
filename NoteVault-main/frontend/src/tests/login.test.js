@@ -123,7 +123,7 @@ describe("Login Component", () => {
     );
 
     // Ensure fetch was called with correct arguments
-    expect(global.fetch).toHaveBeenCalledWith("http://localhost:8000/login/", {
+    expect(global.fetch).toHaveBeenCalledWith("http://52.7.128.221:8000/login/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: "testuser", password: "wrongpassword" }),

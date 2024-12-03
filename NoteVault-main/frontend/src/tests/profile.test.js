@@ -93,7 +93,7 @@ describe('Profile Component', () => {
       json: () => Promise.resolve({ message: 'Password reset successfully' }),
     });
     await act(async () => { fireEvent.click(screen.getByText('Save')); });
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8000/reset-password/', {
+    expect(global.fetch).toHaveBeenCalledWith('http://52.7.128.221:8000/reset-password/', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -176,7 +176,7 @@ describe('Profile Component', () => {
     fireEvent.click(saveButton);
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/profile/', 
+        'http://52.7.128.221:8000/profile/', 
         expect.objectContaining({
           method: 'PUT', 
           body: JSON.stringify({
