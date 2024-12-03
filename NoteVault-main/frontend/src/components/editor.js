@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { MdRefresh } from "react-icons/md";
 import { FaMicrophone, FaStop, FaSpinner } from 'react-icons/fa';
 import { IoClose } from "react-icons/io5";
+import { GiAnticlockwiseRotation } from "react-icons/gi";
 
 
 const Editor = () => {
@@ -15,6 +16,7 @@ const Editor = () => {
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [note, setNote] = useState('');
+  const [prevNote, setPrevNote] = useState('');
   const [newCategory, setNewCategory] = useState(''); 
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isRecording, setIsRecording] = useState(false);
@@ -23,6 +25,32 @@ const Editor = () => {
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [undo, setUndo] = useState(false);
+  
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleUndo = () => {
+    setUndo(false);
+    setNote(prevNote);
+    setPrevNote('');
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const openResetModal = () => {
+    
+    setIsResetModalOpen(true);
+  };
+
+  const closeResetModal = () => {
+    setIsResetModalOpen(false);
+  };
   
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center min-h-screen">
@@ -147,6 +175,7 @@ const Editor = () => {
   };
 
   const handleReset = () => {
+    setIsResetModalOpen(false);
     setNote('');
   };
 
@@ -263,6 +292,8 @@ const Editor = () => {
             autoClose: 2000,
           });
         } else if (data.correctedText) {
+          setPrevNote(note);
+          setUndo(true);
           setNote(data.correctedText);
           toast.success("Spelling and grammar fixed successfully.", {
             position: "top-center",
@@ -315,7 +346,8 @@ const Editor = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.summary) {
-          
+          setPrevNote(note);
+          setUndo(true);
           setNote(data.summary);
           toast.success("Text summarized successfully.", {
             position: "top-center",
@@ -381,7 +413,7 @@ const Editor = () => {
           <div>
             {noteId && (
               <button
-                onClick={handleDelete}
+                onClick={openDeleteModal}
                 className=" text-gray-600 hover:text-black py-2 px-4 rounded"
                 title='Delete'
               >
@@ -389,11 +421,11 @@ const Editor = () => {
               </button>
             )}
             <button
-              onClick={handleReset}
+              onClick={openResetModal}
               className=" text-gray-600 hover:text-black py-2 px-4 rounded font-extrabold"
               title='Reset'
             >
-              <MdRefresh  className="text-2xl" />
+              <GiAnticlockwiseRotation className="text-2xl font-extrabold" />
             </button>
             <button
               onClick={() => navigate('/')}
@@ -495,7 +527,7 @@ const Editor = () => {
             id="note"
             className="w-full px-2 bg-white text-black border border-black rounded-md h-96 outline-none"
             value={note}
-            onChange={(e) => setNote(e.target.value)}
+            onChange={(e) => {setNote(e.target.value); setUndo(false)}}
             placeholder="Type or record your note here..."
             required
             style={{
@@ -525,6 +557,14 @@ const Editor = () => {
         </div>
 
         <div className="flex justify-end">
+          {undo && (
+            <button
+              onClick={handleUndo}
+              className="bg-red-500 hover:bg-red-600 border border-red-500 text-white py-2 px-4 rounded mr-4"
+            >
+              Undo AI Effect
+            </button>
+          )}
           <button
             onClick={handleCheckGrammar}
             className="bg-black hover:bg-gray-600 border border-black text-white py-2 px-4 rounded mr-4"
@@ -576,6 +616,70 @@ const Editor = () => {
                 className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
               >
                 Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
+          <div className="relative bg-white p-8 rounded-md w-1/3 text-black border border-black">
+        
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
+              aria-label="Close"
+            >
+              <IoClose />
+            </button>
+            <h3 className="text-2xl  mb-6 text-black">
+              Are you sure you want to delete this note?
+            </h3>
+
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeDeleteModal}
+                className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
+              >
+                No
+              </button>
+              <button
+                onClick={() => handleDelete()}
+                className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isResetModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80">
+          <div className="relative bg-white p-8 rounded-md w-1/3 text-black border border-black">
+        
+            <button
+              onClick={() => setIsResetModalOpen(false)}
+              className="absolute top-2 right-2 text-xl text-black hover:text-gray-600 p-2"
+              aria-label="Close"
+            >
+              <IoClose />
+            </button>
+            <h3 className="text-2xl  mb-6 text-black">
+              Are you sure you want to clear this note?
+            </h3>
+
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeResetModal}
+                className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
+              >
+                No
+              </button>
+              <button
+                onClick={handleReset}
+                className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"
+              >
+                Yes
               </button>
             </div>
           </div>

@@ -227,7 +227,7 @@ const Profile = () => {
           <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl text-black font-semibold">Reset Password</h2>
               <button
-              onClick={() => setIsResetPasswordOpen(false)} // Close dialog
+              onClick={() => {setIsResetPasswordOpen(false); setCurrentPassword(''); setConfirmPassword(''); setNewPassword('');}} 
               className="text-black hover:text-gray-700 text-lg"
               >
               <IoClose />
@@ -279,7 +279,7 @@ const Profile = () => {
           {/* Buttons */}
           <div className="flex justify-end space-x-2">
               <button
-              onClick={() => setIsResetPasswordOpen(false)} // Close dialog
+              onClick={() => {setIsResetPasswordOpen(false); setCurrentPassword(''); setConfirmPassword(''); setNewPassword('');}} // Close dialog
               className="bg-black text-white py-1 px-4 rounded hover:bg-gray-700"
               >
               Cancel
