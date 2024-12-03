@@ -81,7 +81,7 @@ const Editor = () => {
     setLoading(true);
     const fetchCategories = async () => {
       try {
-        const response = await apiCallWithToken('http://localhost:8000/categories', { method: 'GET' });
+        const response = await apiCallWithToken('http://3.89.180.67:8000/categories', { method: 'GET' });
         if (response.ok) {
           const data = await response.json();
           setCategories(data); 
@@ -103,7 +103,7 @@ const Editor = () => {
       setLoading(true);
       const fetchNote = async () => {
         try {
-          const response = await apiCallWithToken(`http://localhost:8000/notes/${noteId}`, { method: 'GET' });
+          const response = await apiCallWithToken(`http://3.89.180.67:8000/notes/${noteId}`, { method: 'GET' });
           if (response.ok) {
             const data = await response.json();
             console.log("data", data);
@@ -127,7 +127,7 @@ const Editor = () => {
 
   const handleNewCategory = async () => {
     try {
-      const response = await apiCallWithToken('http://localhost:8000/categories/create/', {
+      const response = await apiCallWithToken('http://3.89.180.67:8000/categories/create/', {
         method: 'POST',
         body: JSON.stringify({ title: newCategory }),
       });
@@ -203,8 +203,8 @@ const Editor = () => {
 
     try {
       console.log("font size", fontStyle);
-      const response = await apiCallWithToken(noteId ? `http://localhost:8000/notes/update/${noteId}/` 
-                                                      : 'http://localhost:8000/notes/create/', {
+      const response = await apiCallWithToken(noteId ? `http://3.89.180.67:8000/notes/update/${noteId}/` 
+                                                      : 'http://3.89.180.67:8000/notes/create/', {
         method: noteId ? 'PUT' : 'POST',
         body: JSON.stringify({ title, category, content: note, font_size: parseInt(fontSize), font_style: fontStyle, font_style: fontStyle }),  // Pass font style in the request
       });
@@ -225,7 +225,7 @@ const Editor = () => {
   const handleDelete = async () => {
     if (noteId) {
       try {
-        const response = await apiCallWithToken(`http://localhost:8000/notes/delete/${noteId}/`, { method: 'DELETE' });
+        const response = await apiCallWithToken(`http://3.89.180.67:8000/notes/delete/${noteId}/`, { method: 'DELETE' });
         if (response.ok) {
           console.log('Note deleted successfully');
           toast.success('Note deleted successfully');
@@ -246,7 +246,7 @@ const Editor = () => {
         autoClose: 2000,
       });
   
-      const response = await apiCallWithToken('http://localhost:8000/check_grammar/', {
+      const response = await apiCallWithToken('http://3.89.180.67:8000/check_grammar/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -303,7 +303,7 @@ const Editor = () => {
       });
   
       
-      const response = await apiCallWithToken('http://localhost:8000/summarize/', {
+      const response = await apiCallWithToken('http://3.89.180.67:8000/summarize/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

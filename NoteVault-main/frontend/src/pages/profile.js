@@ -26,7 +26,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch('http://localhost:8000/profile/', {
+        const response = await fetch('http://3.89.180.67:8000/profile/', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -63,7 +63,7 @@ const Profile = () => {
 
   const handleUpdateEmail = async () => {
     try {
-      const response = await fetch('http://localhost:8000/profile/', {
+      const response = await fetch('http://3.89.180.67:8000/profile/', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -109,7 +109,7 @@ const Profile = () => {
   };
   const handleSave = async () => {
     try {
-      const response = await fetch("http://localhost:8000/profile/", {
+      const response = await fetch("http://3.89.180.67:8000/profile/", {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -143,7 +143,7 @@ const Profile = () => {
     }
     
     try {
-    const response = await fetch('http://localhost:8000/reset-password/', {
+    const response = await fetch('http://3.89.180.67:8000/reset-password/', {
         method: 'POST',
         headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,

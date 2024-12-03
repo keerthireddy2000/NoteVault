@@ -38,7 +38,7 @@ const Home = () => {
       setLoading(true);
       try {
         const categoriesResponse = await apiCallWithToken(
-          "http://localhost:8000/categories/"
+          "http://3.89.180.67:8000/categories/"
         );
         const categoriesData = await categoriesResponse.json();
         setCategories([{ _id: "all", title: "All" }, ...categoriesData]);
@@ -64,9 +64,9 @@ const Home = () => {
       try {
         let notesResponse;
         if (selectedCategoryId === undefined || selectedCategoryId === 'all') {
-          notesResponse = await apiCallWithToken('http://localhost:8000/notes/');
+          notesResponse = await apiCallWithToken('http://3.89.180.67:8000/notes/');
         } else {
-          notesResponse = await apiCallWithToken(`http://localhost:8000/notes/category/${selectedCategoryId}/`);
+          notesResponse = await apiCallWithToken(`http://3.89.180.67:8000/notes/category/${selectedCategoryId}/`);
         }
         const notesData = await notesResponse.json();
         const pinnedNotes = notesData.filter(note => note.pinned);
@@ -109,7 +109,7 @@ const Home = () => {
     setNotes(sortedNotes);
 
     try {
-      const response = await fetch(`http://localhost:8000/notes/toggle-pin/${noteId}/`, {
+      const response = await fetch(`http://3.89.180.67:8000/notes/toggle-pin/${noteId}/`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -138,7 +138,7 @@ const Home = () => {
     const newNote = { ...noteToCopy, id: undefined, title: `${noteToCopy.title} - Copy` }; // Create a new note with a modified title
 
     try {
-      const response = await fetch('http://localhost:8000/notes/create/', {
+      const response = await fetch('http://3.89.180.67:8000/notes/create/', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -174,8 +174,8 @@ const Home = () => {
     if (newCategoryTitle.trim()) {
       const token = localStorage.getItem('token');
       const url = categoryId
-        ? `http://localhost:8000/categories/update/${categoryId}/`
-        : 'http://localhost:8000/categories/create/';
+        ? `http://3.89.180.67:8000/categories/update/${categoryId}/`
+        : 'http://3.89.180.67:8000/categories/create/';
 
       const method = categoryId ? 'PUT' : 'POST';
       const requestBody = JSON.stringify({ title: newCategoryTitle });
@@ -215,7 +215,7 @@ const Home = () => {
   const handleDeleteCategory = async (categoryId) => {
     if (categoryId) {
       try {
-        const response = await apiCallWithToken(`http://localhost:8000/categories/delete/${categoryId}/`, { method: 'DELETE' });
+        const response = await apiCallWithToken(`http://3.89.180.67:8000/categories/delete/${categoryId}/`, { method: 'DELETE' });
         if (response.ok) {
           setCategories(categories.filter((cat) => cat.id !== categoryId));
           setNotes(notes.filter((note) => note.category !== categoryId));
