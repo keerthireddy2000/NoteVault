@@ -452,7 +452,7 @@ const Home = () => {
                 className="bg-gray-100 p-4 rounded-md border border-gray-400 shadow-lg relative cursor-pointer h-[200px]"
                 onClick={() => handleNoteClick(note.id)}
               >
-                <h3 className="text-xl font-bold text-black mb-2">{note.title}</h3>
+                <h3 className="text-lg font-bold text-black mt-4 mb-2">{note.title}</h3>
                 <p className="text-gray-700 truncate">{note.content}</p>
 
                 <span
@@ -554,9 +554,11 @@ const Home = () => {
             <h3 className="text-2xl mb-6 text-black">
               Are you sure you want to delete this category -{" "}
               <span className="font-bold">{categoryToDelete?.title}</span>?
+             
             </h3>
+            <span>Please note that this action will delete all the notes associated with this category</span>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex justify-end space-x-4 mt-6">
               <button
                 onClick={closeDeleteModal}
                 className="bg-black hover:bg-gray-600 text-white py-2 px-4 rounded-md"

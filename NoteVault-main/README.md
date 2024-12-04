@@ -8,8 +8,10 @@ NoteVault is a full-stack application designed for creating, managing, and categ
 
 1. User authentication (Login, Signup, Logout)
 2. Create, update, delete notes
-3. Categorize notes
+3. Categorize and organize notes
 4. Pin/Unpin notes for easy access
+5. Use AI to fix spelling and grammatical errors
+6. Download an copy notes
 
 ### Technologies Used
 
@@ -17,7 +19,6 @@ Frontend:
 
 1. React.js (with React Router for navigation)
 2. TailwindCSS (for styling)
-3. Framer Motion (for animations)
 
 Backend:
 
@@ -71,6 +72,7 @@ Set Up the Environment Variables
 
 ```
 DATABASE_URL=mongodb+srv://<your_mongodb_cluster>
+API_KEY=<your_genai_api_key>
 ```
 
 Run Database Migrations
@@ -87,3 +89,61 @@ python manage.py runserver
 ```
 
 This will run the backend server at http://localhost:8000.
+
+### Deployment on EC2:
+
+#### Frontend
+
+Build the source code for production
+
+```
+npm run build
+```
+Clone github repository on EC2 instance and navigate to the frontend build directory
+
+```
+cd notevault/NoteVault-main/frontend/build
+```
+
+Run the Application Using PM2
+
+```
+pm2 start http-server -p 8080
+```
+
+#### Backend
+
+```
+Clone github repository on EC2 instance and navigate to the notevaultBackend directory
+
+```
+cd notevault/NoteVault-main/notevaultBackend
+```
+
+Create and activate virtual environment
+
+```
+pip install virtualenv
+virtualenv venv
+source venv/bin/activate
+```
+
+Install Backend Dependencies
+
+```
+pip install -r requirements.txt
+```
+
+Configure Gunicorn and PM2 for Production
+
+```
+pm2 start "gunicorn --workers 3 --bind 0.0.0.0:8000 notevaultBackend.wsgi:application" --name django-app
+```
+
+
+#### Deployment Link
+
+ http://52.7.128.221:8080/
+
+
+
