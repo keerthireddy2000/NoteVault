@@ -134,6 +134,13 @@ Install Backend Dependencies
 pip install -r requirements.txt
 ```
 
+Set up the Environment Variables
+
+```
+DATABASE_URL=mongodb+srv://<your_mongodb_cluster>
+API_KEY=<your_genai_api_key>
+```
+
 Configure Gunicorn and PM2 for Production
 
 ```

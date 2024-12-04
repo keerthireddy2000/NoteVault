@@ -529,7 +529,7 @@ const Editor = () => {
             className="w-full px-2 bg-white text-black border border-black rounded-md h-96 outline-none"
             value={note}
             onChange={(e) => {setNote(e.target.value); setUndo(false)}}
-            placeholder="Type or record your note here..."
+            placeholder="Type your note here..."
             required
             style={{
               backgroundImage: `linear-gradient(to bottom, #d3d3d3 1px, transparent 1px)`,
@@ -547,14 +547,14 @@ const Editor = () => {
               paddingTop: '0.3rem',
             }}
           />
-          <button
+          {/* <button
             onClick={isRecording ? stopTranscription : startTranscription}
             className={`absolute bottom-5 right-4 p-2 rounded-full hover:bg-gray-600 ${
               isRecording ? 'bg-black' : 'bg-black'
             }`}
           >
             {isRecording ? <FaStop className="text-white text-xl" /> : <FaMicrophone className="text-white text-xl" />}
-          </button>
+          </button> */}
         </div>
 
         <div className="flex justify-end">
