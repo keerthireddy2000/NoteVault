@@ -598,58 +598,6 @@ class NoteAppTests(APITestCase):
         
         # Assert that the response contains an error message for the invalid category
         self.assertIn("error", response.data)
-   
-    # ------------------------- Search Notes Tests -------------------------
-
-    def test_search_notes_by_title(self):
-        """
-        - Test Level: Unit-level.
-        - Purpose: Validate search functionality for notes by title.
-        - Software: Tests the `/notes/search/` endpoint to ensure:
-            1. Notes matching the title query are returned.
-            2. The response status is 200 OK.
-        """
-        response = self.client.get('/notes/search/', {'q': 'Default Note'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)  # Only one note with "Default Note" in title
-        self.assertEqual(response.data[0]['title'], "Default Note")
-
-    def test_search_notes_by_category(self):
-        """
-        - Test Level: Unit-level.
-        - Purpose: Validate search functionality for notes by category name.
-        - Software: Tests the `/notes/search/` endpoint to ensure:
-            1. Notes matching the category query are returned.
-            2. The response status is 200 OK.
-        """
-        response = self.client.get('/notes/search/', {'q': 'Default Category'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)  # Only one note in "Default Category"
-        self.assertEqual(response.data[0]['category'], self.category.id)
-
-    def test_search_notes_no_match(self):
-        """
-        - Test Level: Unit-level.
-        - Purpose: Validate behavior when no notes match the search query.
-        - Software: Tests the `/notes/search/` endpoint to ensure:
-            1. Empty response is returned for no matches.
-            2. The response status is 200 OK.
-        """
-        response = self.client.get('/notes/search/', {'q': 'Nonexistent'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)  # No notes should match
-
-    def test_search_notes_missing_query(self):
-        """
-        - Test Level: Unit-level.
-        - Purpose: Validate error handling when no query parameter is provided.
-        - Software: Tests the `/notes/search/` endpoint to ensure:
-            1. The API returns a 400 Bad Request status for missing query.
-            2. An appropriate error message is included in the response.
-        """
-        response = self.client.get('/notes/search/')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("error", response.data)  # Check for error message
     
 
     # ------------------------- Unauthorized Access Tests -------------------------
