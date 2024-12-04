@@ -299,7 +299,7 @@ const Home = () => {
         children: [
           new TextRun({
             text: line,
-            font: note.font_style,
+            font: note.font_style == 'cursive' ? 'Monotype Corsiva' : note.font_style,
             size: (note.font_size) * 2,
           }),
         ],
@@ -310,7 +310,7 @@ const Home = () => {
         new TextRun({
           text: note.title,
           bold: true,
-          font: note.font_style,
+          font: note.font_style == 'cursive' ? 'Monotype Corsiva' : note.font_style,
           size: (note.font_size) * 2,
         }),
       ],

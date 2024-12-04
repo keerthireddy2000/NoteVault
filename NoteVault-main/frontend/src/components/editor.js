@@ -21,7 +21,7 @@ const Editor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isRecording, setIsRecording] = useState(false);
   const [fontSize, setFontSize] = useState(16); 
-  const [fontStyle, setFontStyle] = useState('normal'); 
+  const [fontStyle, setFontStyle] = useState('Calibri Body'); 
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); 
@@ -139,7 +139,7 @@ const Editor = () => {
             setCategory(data.category);
             setNote(data.content);
             setFontSize(data.font_size || 16);
-            setFontStyle(data.font_style || 'normal');
+            setFontStyle(data.font_style || 'Calibri Body');
           } else {
             console.error('Failed to fetch note');
           }
@@ -512,9 +512,8 @@ const Editor = () => {
             value={fontStyle}
             onChange={(e) => setFontStyle(e.target.value)}
           >
-            <option value="normal">Normal</option>
+            <option value="Calibri Body">Calibri Body</option>
             <option value="Times New Roman">Times New Roman</option>
-            <option value="Calibri">Calibri</option>
             <option value="Georgia">Georgia</option>
             <option value="Tahoma">Tahoma</option>
             <option value="Impact">Impact</option>
@@ -535,9 +534,9 @@ const Editor = () => {
               backgroundImage: `linear-gradient(to bottom, #d3d3d3 1px, transparent 1px)`,
               backgroundSize: `100% 2rem`, 
               lineHeight: `2rem`, 
-              fontFamily: fontStyle === 'normal' ? 'Arial, sans-serif' :
+              fontFamily: 
                           fontStyle === 'Times New Roman' ? '"Times New Roman", Times, serif' :
-                          fontStyle === 'Calibri' ? '"Calibri", sans-serif' :
+                          fontStyle === 'Calibri Body' ? '"Calibri", sans-serif' :
                           fontStyle === 'Georgia' ? 'Georgia, serif' :
                           fontStyle === 'Tahoma' ? 'Tahoma, Geneva, sans-serif' :
                           fontStyle === 'Impact' ? 'Impact, Charcoal, sans-serif' :
