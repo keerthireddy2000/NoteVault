@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { HashRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/home';
@@ -13,6 +13,19 @@ import ForgotPassword from './components/forgot-password';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access'));
 
+  useEffect(() => {
+    const clearLocalStorageOnClose = () => {
+        localStorage.clear();
+    };
+
+    // Add event listener when the component mounts
+    window.addEventListener('beforeunload', clearLocalStorageOnClose);
+
+    // Cleanup event listener on unmount
+    return () => {
+        window.removeEventListener('beforeunload', clearLocalStorageOnClose);
+    };
+}, []);
   
   const ConditionalHeader = () => {
     const location = useLocation();
