@@ -14,17 +14,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('access'));
 
   useEffect(() => {
-    const clearLocalStorageOnClose = () => {
-        localStorage.clear();
-    };
-
-    // Add event listener when the component mounts
-    window.addEventListener('beforeunload', clearLocalStorageOnClose);
-
-    // Cleanup event listener on unmount
-    return () => {
-        window.removeEventListener('beforeunload', clearLocalStorageOnClose);
-    };
+    localStorage.clear();
+        console.log('localStorage cleared on initial load');
 }, []);
   
   const ConditionalHeader = () => {
